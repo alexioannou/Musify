@@ -10,12 +10,12 @@ class MusifyService {
 
     def createAlbum(Object title, Object artist, Object[] genres) {
         String nextIdQuery = "SELECT nextval('albums_id_sequence');"
-        String createAlbumQuery = "INSERT INTO albums VALUES(?,?,?);";
-        String addAlbumGenreQuery = "INSERT INTO represents VALUES(?,?);"
+        String createAlbumQuery = "INSERT INTO albums VALUES(?, ?, ?);";
+        String addAlbumGenreQuery = "INSERT INTO represents VALUES(?, ?);"
         Sql sql = new Sql(dataSource)
         def nextIdResult = sql.firstRow(nextIdQuery)
         int newAlbumId = nextIdResult.nextval
-        sql.execute(createAlbumQuery, [newAlbumId, title.toString(),artist.toString()])
+        sql.execute(createAlbumQuery, [newAlbumId, title.toString(), artist.toString()])
         genres.each {gen ->
             sql.execute(addAlbumGenreQuery, [newAlbumId, Integer.parseInt(gen.toString())])
         }
@@ -23,7 +23,7 @@ class MusifyService {
 
     def getAlbums() {
         String getAlbumsQuery = "Select * FROM albums;"
-        String getAlbumGenresQuery = "Select albumid,styles.name FROM represents,styles WHERE styles.id = styleid;"
+        String getAlbumGenresQuery = "Select albumid, styles.name FROM represents, styles WHERE styles.id = styleid;"
         Sql sql = new Sql(dataSource)
         def albumsResults = sql.rows(getAlbumsQuery)
         def albumGenresResults = sql.rows(getAlbumGenresQuery)
@@ -32,7 +32,7 @@ class MusifyService {
 
     def getSingleAlbum(Object id) {
         String getSingleAlbumQuery = "Select * FROM albums where id = ?"
-        String getSingleAlbumStylesQuery = "Select styleid as id FROM styles,represents where styles.id = styleid AND albumid = ?;"
+        String getSingleAlbumStylesQuery = "Select styleid as id FROM styles, represents where styles.id = styleid AND albumid = ?;"
         Sql sql = new Sql(dataSource)
         def singleAlbumResult = sql.firstRow(getSingleAlbumQuery, [Integer.parseInt(id.toString())])
         singleAlbumResult.genres = sql.rows(getSingleAlbumStylesQuery, [Integer.parseInt(id.toString())])
@@ -62,8 +62,8 @@ class MusifyService {
     }
 
     def searchAlbums(Object title, Object artist, Object genre) {
-        String searchAlbumsQuery = "SELECT DISTINCT albums.id,albums.title,albums.artist FROM albums,represents,styles WHERE styles.id = styleid AND albums.id = albumid AND (albums.title = ? OR albums.artist = ? OR styles.name = ?);"
-        String searchAlbumsGenresQuery = "SELECT correctAlbums.albumid, styles.name FROM (SELECT DISTINCT albumid FROM albums,represents,styles WHERE styles.id = styleid AND albums.id = albumid AND (albums.title = ? OR albums.artist = ? OR styles.name = ?)) AS correctAlbums, represents, styles WHERE represents.styleid = styles.id AND represents.albumid = correctAlbums.albumid;"
+        String searchAlbumsQuery = "SELECT DISTINCT albums.id,albums.title, albums.artist FROM albums, represents, styles WHERE styles.id = styleid AND albums.id = albumid AND (albums.title = ? OR albums.artist = ? OR styles.name = ?);"
+        String searchAlbumsGenresQuery = "SELECT correctAlbums.albumid, styles.name FROM (SELECT DISTINCT albumid FROM albums, represents, styles WHERE styles.id = styleid AND albums.id = albumid AND (albums.title = ? OR albums.artist = ? OR styles.name = ?)) AS correctAlbums, represents, styles WHERE represents.styleid = styles.id AND represents.albumid = correctAlbums.albumid;"
         Sql sql = new Sql(dataSource)
         def albumSearchResults = sql.rows(searchAlbumsQuery, [title.toString(),artist.toString(),genre.toString()])
         def albumGenreSearchResults = sql.rows(searchAlbumsGenresQuery, [title.toString(),artist.toString(),genre.toString()])

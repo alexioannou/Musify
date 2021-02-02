@@ -1,0 +1,43 @@
+#pageHeader {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 140px;
+    width: 100%;
+    margin-bottom: 25px;
+    text-align: center;
+    border-style: solid;
+    border-color: #dddddd;
+    cursor: default;
+}
+
+#formDiv {
+    text-align: center;
+    width: 100%;
+}
+
+form {
+    width: 50%;
+    display: inline-block;
+}
+
+#formHeader {
+    margin: 25px 0 25px 0;
+    cursor: default;
+}
+
+.button {
+    margin: 0 20px;
+    width: 100px;
+}
+
+.tableColumnHeader {
+    font-size: xx-large;
+    text-decoration: underline;
+}
+th {
+    text-align: center;
+}
+
+.deleteLink {color: red;}
+.deleteLink:hover {color: #dd0000;}

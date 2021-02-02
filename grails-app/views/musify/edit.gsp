@@ -10,66 +10,35 @@
 <head>
     <title>Edit Album</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'musify.css')}" type="text/css">
     <style>
 
-        #cancelButton {
-            margin-left: 50px;
-        }
-
-        h1 {
-            padding: 50px 50px 50px 50px;
-            font-size: 50px;
-        }
-
-        form {
-            width: 25%;
-            min-width: 350px;
-        }
-
-        .form-group {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #genresLabel {
-
-        }
-
-        #genres {
+        select {
+            text-align: center;
+            display: block;
             min-height: 150px;
-            margin-bottom: 70px;
+            margin: 0 auto 50px auto;
         }
     </style>
 </head>
 
 <body>
-    <div style="text-align:center; align-self:center; width:100%;">
-        <h1>Edit your album</h1>
-        <div class="form-group">
-            <form>
-                <div>
-                    <label id="titleLabel" for="titleField">Title</label>
-                    <span><input class="form-control" value="${album.title}" type="text" id="titleField" name="title"/></span><br/>
-                    <label id="artistLabel" for="artistField">Artist </label>
-                    <span><input class="form-control" value="${album.artist}" type="text" id="artistField" name="artist"/></span><br/>
-                </div>
-                <div>
-                    <label for="genres" id="genresLabel">Genres</label><br/>
-                    <select name="genres" id="genres" multiple>
-                        <g:each in="${genres}" var="genre">
-                            <option value=${genre.id}>${genre.name}</option>
-                        </g:each>
-                    </select>
-                </div>
-                <g:actionSubmit class="button" id="confirmButton" value="Confirm" params="['id': album.id]" action="update"/>
-                <g:link action="listAlbums">
-                    <input type="button" id="cancelButton" value="Cancel" class="button"/>
-                </g:link>
-            </form>
-
-        </div>
+    <h1 id="pageHeader">Edit your album</h1>
+    <div id="formDiv">
+        <form id="myForm" name="myForm" controller="Musify">
+            <label class="formLabel" id="titleLabel" for="titleField">Title</label>
+            <input class="form-control" type="text" id="titleField" name="title"/><br/>
+            <label class="formLabel" id="artistLabel" for="artistField">Artist </label>
+            <input class="form-control" type="text" id="artistField" name="artist"/><br/>
+            <label for="genres" id="genresLabel">Genres</label><br/>
+            <select name="genres" id="genres" multiple>
+                <g:each in="${genres}" var="genre">
+                    <option value=${genre.id}>${genre.name}</option>
+                </g:each>
+            </select>
+            <g:actionSubmit class="button" id="confirmButton" value="Confirm" params="['id': album.id]" action="update"/>
+            <g:actionSubmit value="Cancel" action="listAlbums" class="button"/>
+        </form>
     </div>
 </body>
 </html>

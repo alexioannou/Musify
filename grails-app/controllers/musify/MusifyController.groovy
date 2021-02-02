@@ -30,10 +30,6 @@ class MusifyController {
         redirect (action: "listAlbums")
     }
 
-    def show() {
-
-    }
-
     def listAlbums() {
         def myAlbums = musifyService.getAlbums()
         myAlbums[0].each{alb ->
@@ -47,16 +43,31 @@ class MusifyController {
     }
 
     def search() {
-        def myAlbums = musifyService.searchAlbums(params.title, params.artist, params.genre)
-        myAlbums[0].each{alb ->
-            alb.genres = new ArrayList<>()
-            myAlbums[1].each {gen ->
-                if(gen.albumid == alb.id)
-                    alb.genres.add(gen.name)
+        def myAlbums;
+        if(params.title || params.artist || params.genre)
+        {
+            myAlbums = musifyService.searchAlbums(params.title, params.artist, params.genre)
+            myAlbums[0].each{alb ->
+                alb.genres = new ArrayList<>()
+                myAlbums[1].each {gen ->
+                    if(gen.albumid == alb.id)
+                        alb.genres.add(gen.name)
+                }
             }
+            return render(view: 'searchResults', model: [albums: myAlbums[0], criteria: params.criteria]);
         }
-
-        return render(view: 'search', model: [albums : myAlbums[0], criteria: params.criteria]);
+        else
+        {
+            myAlbums = musifyService.getAlbums()
+            myAlbums[0].each{alb ->
+                alb.genres = new ArrayList<>()
+                myAlbums[1].each {gen ->
+                    if(gen.albumid == alb.id)
+                        alb.genres.add(gen.name)
+                }
+            }
+            return render(view: 'searchResults', model: [albums: myAlbums[0], criteria: ["", "", ""]]);
+        }
     }
 
     def delete() {
@@ -66,18 +77,5 @@ class MusifyController {
 
     def test() {
 
-    }
-
-    def test2() {
-        def myAlbums = musifyService.searchAlbums(params.criteria[0], params.criteria[1], params.criteria[2])
-        myAlbums[0].each{alb ->
-            alb.genres = new ArrayList<>()
-            myAlbums[1].each {gen ->
-                if(gen.albumid == alb.id)
-                    alb.genres.add(gen.name)
-            }
-        }
-
-        return render(view: 'search', model: [albums : myAlbums[0], criteria: params.criteria]);
     }
 }
