@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <style>
 
+        #cancelButton {
+            margin-left: 50px;
+        }
+
         h1 {
             padding: 50px 50px 50px 50px;
             font-size: 50px;
@@ -60,6 +64,9 @@
                     </select>
                 </div>
                 <g:actionSubmit class="button" id="confirmButton" value="Confirm" params="['id': album.id]" action="update"/>
+                <g:link action="listAlbums">
+                    <input type="button" id="cancelButton" value="Cancel" class="button"/>
+                </g:link>
             </form>
 
         </div>

@@ -5,7 +5,7 @@ class MusifyController {
     def musifyService
 
     def index() {
-        redirect action: "listAlbums"
+        redirect (action: "listAlbums")
     }
 
     def add() {
@@ -15,7 +15,8 @@ class MusifyController {
 
     def create() {
         musifyService.createAlbum(params.title, params.artist, params.genres)
-        redirect action: "listAlbums"
+        println params.title.getClass()
+        redirect (action: "listAlbums")
     }
 
     def edit() {
@@ -26,7 +27,7 @@ class MusifyController {
 
     def update() {
         musifyService.updateAlbum(params.id, params.title, params.artist, params.genres)
-        redirect action: "listAlbums"
+        redirect (action: "listAlbums")
     }
 
     def show() {
@@ -34,39 +35,49 @@ class MusifyController {
     }
 
     def listAlbums() {
-        if(chainModel)
-        {
-            def myAlbums = musifyService.searchAlbums(chainModel.criteria[0],chainModel.criteria[1],chainModel.criteria[2])
-            myAlbums[0].each{alb ->
-                alb.genres = new ArrayList<>()
-                myAlbums[1].each {gen ->
-                    if(gen.albumid == alb.id)
-                        alb.genres.add(gen.name)
-                }
+        def myAlbums = musifyService.getAlbums()
+        myAlbums[0].each{alb ->
+            alb.genres = new ArrayList<>()
+            myAlbums[1].each {gen ->
+                if(gen.albumid == alb.id)
+                    alb.genres.add(gen.name)
             }
-            [albums : myAlbums[0], criteria: chainModel.criteria]
         }
-        else
-        {
-            def myAlbums = musifyService.getAlbums()
-            myAlbums[0].each{alb ->
-                alb.genres = new ArrayList<>()
-                myAlbums[1].each {gen ->
-                    if(gen.albumid == alb.id)
-                        alb.genres.add(gen.name)
-                }
-            }
-            [ albums : myAlbums[0], criteria: ["","",""]]
-        }
+        [ albums : myAlbums[0], criteria: ["", "", ""]]
     }
 
     def search() {
         def myAlbums = musifyService.searchAlbums(params.title, params.artist, params.genre)
-        chain(action: "listAlbums", model: [albums: myAlbums, criteria: [params.title, params.artist, params.genre] ])
+        myAlbums[0].each{alb ->
+            alb.genres = new ArrayList<>()
+            myAlbums[1].each {gen ->
+                if(gen.albumid == alb.id)
+                    alb.genres.add(gen.name)
+            }
+        }
+
+        return render(view: 'search', model: [albums : myAlbums[0], criteria: params.criteria]);
     }
 
     def delete() {
         musifyService.deleteAlbum(params.id)
-        redirect action: "listAlbums"
+        redirect (action: "listAlbums")
+    }
+
+    def test() {
+
+    }
+
+    def test2() {
+        def myAlbums = musifyService.searchAlbums(params.criteria[0], params.criteria[1], params.criteria[2])
+        myAlbums[0].each{alb ->
+            alb.genres = new ArrayList<>()
+            myAlbums[1].each {gen ->
+                if(gen.albumid == alb.id)
+                    alb.genres.add(gen.name)
+            }
+        }
+
+        return render(view: 'search', model: [albums : myAlbums[0], criteria: params.criteria]);
     }
 }
