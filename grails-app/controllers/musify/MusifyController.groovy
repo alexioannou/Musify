@@ -11,29 +11,29 @@ class MusifyController {
     }
 
     def add() {
-        def myStyles = musifyService.getStyles()
+        def myStyles = musifyService.fetchAllStyles()
         [genres : myStyles]
     }
 
     def create() {
-        musifyService.createAlbum(params.title, params.artist, params.genres)
+        musifyService.createAlbumServiceMethod(params.title, params.artist, params.genres)
         println params.title.getClass()
         redirect (action: "listAlbums")
     }
 
     def edit() {
-        def myStyles = musifyService.getStyles()
-        def myAlbum = musifyService.getSingleAlbum(params.id)
+        def myStyles = musifyService.fetchAllStyles()
+        def myAlbum = musifyService.fetchSingleAlbum(params.id)
         [album: myAlbum, genres : myStyles]
     }
 
     def update() {
-        musifyService.updateAlbum(params.id, params.title, params.artist, params.genres)
+        musifyService.updateAlbumsServiceMethod(params.id, params.title, params.artist, params.genres)
         redirect (action: "listAlbums")
     }
 
     def listAlbums() {
-        def myAlbums = musifyService.getAlbums()
+        def myAlbums = musifyService.fetchAllAlbums()
         myAlbums.albumsResults.each{alb ->
             def albumGenres = []
             myAlbums.albumGenresResults.each {gen ->
@@ -50,7 +50,7 @@ class MusifyController {
         def myJson = []
         if(params.title || params.artist || params.genre)
         {
-            myAlbums = musifyService.searchAlbums(params.title, params.artist, params.genre)
+            myAlbums = musifyService.searchAlbumsSearviceMethod(params.title, params.artist, params.genre)
             myAlbums.albumSearchResults.each{alb ->
                 def albumGenres = []
                 def albumObject = [:]
@@ -70,7 +70,7 @@ class MusifyController {
         }
         else
         {
-            myAlbums = musifyService.getAlbums()
+            myAlbums = musifyService.fetchAllAlbums()
             myAlbums.albumsResults.each{alb ->
                 def albumGenres = []
                 def albumObject = [:]
