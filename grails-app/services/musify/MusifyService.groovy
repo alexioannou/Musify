@@ -20,12 +20,43 @@ class MusifyService {
         }
     }
 
+    //-------------------------------------------------------------- List --------------------------------------------------------------
+    def listAlbumsServiceMethod()   //Lists all Albums in the Database
+    {
+        def albumList = fetchAllAlbums()
+        albumList.albumsResults.each{alb ->
+            def albumGenres = []
+            albumList.albumGenresResults.each {gen ->
+                if(gen.albumid == alb.id)
+                    albumGenres.add(gen.name)
+            }
+            alb.genres = albumGenres
+        }
+        return albumList.albumsResults
+    }
+
     //-------------------------------------------------------------- SEARCH --------------------------------------------------------------
-    def searchAlbumsSearviceMethod(String title, String artist, String genre)   //Searches for Albums in the Database
+    def searchAlbumsAsJSON(String title, String artist, String genre)   //Searches for Albums in the Database
     {
         def albumSearchResults = searchAlbumsGetAlbums(title, artist, genre)
         def albumGenreSearchResults = searchAlbumsGetGenres(title, artist, genre)
-        return [albumSearchResults: albumSearchResults, albumGenreSearchResults: albumGenreSearchResults]
+        def myJson = []
+        def albumList = [albumSearchResults: albumSearchResults, albumGenreSearchResults: albumGenreSearchResults]
+        albumList.albumSearchResults.each{alb ->
+            def albumGenres = []
+            def albumObject = [:]
+            albumObject.id = alb.id
+            albumObject.title = alb.title
+            albumObject.artist = alb.artist
+            albumList.albumGenreSearchResults.each {gen ->
+                if(gen.albumid == alb.id)
+                    albumGenres.add(gen.name)
+            }
+            alb.genres = albumGenres
+            albumObject.genres = alb.genres
+            myJson.add(albumObject)
+        }
+        return myJson
     }
 
     def searchAlbumsGetAlbums(String title, String artist, String genre)    //Fetches the correct Albums
@@ -45,6 +76,12 @@ class MusifyService {
                                                                 WHERE styles.id = styleid AND albums.id = albumid AND (albums.title = ${title} OR albums.artist = ${artist} OR styles.name = ${genre})) AS correctAlbums
                                                         WHERE represents.styleid = styles.id AND represents.albumid = correctAlbums.albumid""")
     }
+    //def searchAlbumsSearviceMethod(String title, String artist, String genre)   //Searches for Albums in the Database
+    //{
+    //    def albumSearchResults = searchAlbumsGetAlbums(title, artist, genre)
+    //    def albumGenreSearchResults = searchAlbumsGetGenres(title, artist, genre)
+    //    return [albumSearchResults: albumSearchResults, albumGenreSearchResults: albumGenreSearchResults]
+    //}
 
     //-------------------------------------------------------------- UPDATE --------------------------------------------------------------
     def updateAlbumsServiceMethod(String id, String title, String artist, def genres)   //Updates an Album in the database
@@ -114,6 +151,26 @@ class MusifyService {
         def albumsResults = sql.rows("Select * FROM albums")
         def albumGenresResults = sql.rows("Select albumid, styles.name FROM represents, styles WHERE styles.id = styleid")
         return [albumsResults: albumsResults, albumGenresResults: albumGenresResults]
+    }
+
+    def fetchAllAlbumsAsJSON()
+    {
+        def albumList = fetchAllAlbums()
+        def myJson = []
+        albumList.albumsResults.each{alb ->
+            def albumGenres = []
+            def albumObject = [:]
+            albumObject.id = alb.id
+            albumObject.title = alb.title
+            albumObject.artist = alb.artist
+            albumList.albumGenresResults.each {gen ->
+                if(gen.albumid == alb.id)
+                    albumGenres.add(gen.name)
+            }
+            albumObject.genres = albumGenres
+            myJson.add(albumObject)
+        }
+        return myJson
     }
 
     def fetchAlbumStyles(int albumId)   //Fetches the Genres of an Album from the Database
