@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'musify.css')}" type="text/css">
     <style>
-
         select {
             text-align: center;
             display: block;
@@ -20,6 +19,11 @@
             margin: 0 auto 50px auto;
         }
     </style>
+    <script>
+        $(document).ready(function() {
+
+        });
+    </script>
 </head>
 
 <body>
@@ -27,9 +31,9 @@
     <div id="formDiv">
         <form id="myForm" name="myForm" controller="Musify">
             <label class="formLabel" id="titleLabel" for="titleField">Title</label>
-            <input class="form-control" type="text" id="titleField" name="title"/><br/>
+            <input class="form-control" type="text" id="titleField" value="${album.title}"name="title"/><br/>
             <label class="formLabel" id="artistLabel" for="artistField">Artist </label>
-            <input class="form-control" type="text" id="artistField" name="artist"/><br/>
+            <input class="form-control" type="text" id="artistField" value="${album.artist}" name="artist"/><br/>
             <label for="genres" id="genresLabel">Genres</label><br/>
             <select name="genres" id="genres" multiple>
                 <g:each in="${genres}" var="genre">

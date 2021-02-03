@@ -1,5 +1,7 @@
 package musify
 
+import grails.converters.JSON
+
 class MusifyController {
 
     def musifyService
@@ -45,32 +47,46 @@ class MusifyController {
 
     def search() {
         def myAlbums
+        def myJson = []
         if(params.title || params.artist || params.genre)
         {
             myAlbums = musifyService.searchAlbums(params.title, params.artist, params.genre)
             myAlbums.albumSearchResults.each{alb ->
                 def albumGenres = []
+                def albumObject = [:]
+                albumObject.id = alb.id
+                albumObject.title = alb.title
+                albumObject.artist = alb.artist
                 myAlbums.albumGenreSearchResults.each {gen ->
                     if(gen.albumid == alb.id)
                         albumGenres.add(gen.name)
                 }
                 alb.genres = albumGenres
+                albumObject.genres = alb.genres
+                myJson.add(albumObject)
             }
-            return render(view: 'searchResults', model: [albums: myAlbums.albumSearchResults])
+            response.setContentType("application/json")
+            return render(myJson as JSON)
         }
         else
         {
             myAlbums = musifyService.getAlbums()
             myAlbums.albumsResults.each{alb ->
                 def albumGenres = []
+                def albumObject = [:]
+                albumObject.id = alb.id
+                albumObject.title = alb.title
+                albumObject.artist = alb.artist
                 myAlbums.albumGenresResults.each {gen ->
                     if(gen.albumid == alb.id)
                         albumGenres.add(gen.name)
                 }
                 alb.genres = albumGenres
+                albumObject.genres = alb.genres
+                myJson.add(albumObject)
             }
-            println myAlbums.albumsResults
-            return render(view: 'searchResults', model: [albums: myAlbums.albumsResults])
+            response.setContentType("application/json")
+            return render(myJson as JSON)
         }
     }
 

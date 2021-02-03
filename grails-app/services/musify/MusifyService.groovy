@@ -39,45 +39,59 @@ class MusifyService {
         return [albumSearchResults: albumSearchResults, albumGenreSearchResults: albumGenreSearchResults]
     }
 
-    def getSingleAlbum(int id) {
+    def getSingleAlbum(String id)
+    {
+        int correctId = Integer.parseInt(id)
         Sql sql = new Sql(dataSource)
-        def singleAlbumResult = sql.firstRow("Select * FROM albums where id = ${id}")
-        singleAlbumResult.genres = sql.rows("Select styleid as id FROM styles, represents where styles.id = styleid AND albumid = ${id}")
+        def singleAlbumResult = sql.firstRow("Select * FROM albums where id = ${correctId}")
+        singleAlbumResult.genres = sql.rows("Select styleid as id FROM styles, represents where styles.id = styleid AND albumid = ${correctId}")
         return singleAlbumResult
     }
 
-    def updateAlbum(int id, String title, String artist, def genres)
+    def updateAlbum(String id, String title, String artist, def genres)
     {
+        int correctId = Integer.parseInt(id)
         Sql sql = new Sql(dataSource)
-        sql.execute("UPDATE albums SET title = ${title}, artist = ${artist} WHERE id = ${id}")
-        def albumGenresResults = sql.rows("Select styleid FROM represents WHERE albumid = ${id}")
-        albumGenresResults.each {gen ->
-            if(!genres.contains(gen.styleid))
-            {
-                int genId = Integer.parseInt(gen.styleid.toString())
-                sql.execute("DELETE FROM represents WHERE albumid = ${id} AND styleid = ${genId}")
+        sql.execute("UPDATE albums SET title = ${title}, artist = ${artist} WHERE id = ${correctId}")
+        def albumGenresResults = sql.rows("Select styleid FROM represents WHERE albumid = ${correctId}")
+        if(genres)
+        {
+            albumGenresResults.each {albGen ->
+                if(!genres.contains(albGen.styleid.toString()))
+                {
+                    sql.execute("DELETE FROM represents WHERE albumid = ${correctId} AND styleid = ${albGen.styleid}")
+                }
             }
-        }
-        genres.each { gen ->
-            if(!albumGenresResults.contains(gen))
-            {
-                int genId = Integer.parseInt(gen.styleid.toString())
-                sql.execute("INSERT INTO represents VALUES(${id},${genId})")
+            //For each Genre selected in the Edit form
+            genres.each { gen ->
+                boolean flag = false; //false = not associated
+                albumGenresResults.find {albGen ->
+                    if (albGen.styleid == Integer.parseInt(gen))    //It's already associated with this album
+                    {
+                        flag = true;
+                        return true;
+                    }
+                    return false    //It's not already associated with this album
+                }
+                if(!flag)    //Associate it with this album
+                {
+                    int genId = Integer.parseInt(gen)
+                    sql.execute("INSERT INTO represents VALUES(${correctId},${genId})")
+                }
             }
         }
     }
 
-    def deleteAlbum(int id)
+    def deleteAlbum(String id)
     {
-        String deleteAlbumQuery = "DELETE FROM albums WHERE id = ${id}"
+        int correctId = Integer.parseInt(id)
         Sql sql = new Sql(dataSource)
-        sql.execute(deleteAlbumQuery, [Integer.parseInt(id.toString())])
+        sql.execute("DELETE FROM albums WHERE id = ${correctId}")
     }
 
     def getStyles() {
-        String getStylesQuery = "Select * FROM styles"
         Sql sql = new Sql(dataSource)
-        def stylesResults = sql.rows(getStylesQuery)
+        def stylesResults = sql.rows("Select * FROM styles")
         return stylesResults
     }
 }

@@ -29,9 +29,19 @@
                 formData.artist = $('#artistField').val();
                 formData.genre = $('#genreField').val();
                 let url = "${createLink(controller:'Musify', action:'search')}";
-                $.ajax({url: url, data: formData, success: function(result) {
-                        $("#tableDiv").html(result);
-                        // console.log(result);
+                $.ajax({url: url, data: formData, dataType: "json", success: function(result) {
+                        $("#myTable").html("<tr><th class=tableColumnHeader>Artist</th><th class=tableColumnHeader>Title</th> <th class=tableColumnHeader>Genres</th> <th/> <th/> </tr>");
+                        for(album of result)
+                        {
+                            let properGenres = album.genres.toString().split(',').join(', ');
+                            console.log(properGenres);
+                            let row = document.getElementById("myTable").insertRow(1);
+                            row.insertCell(0).outerHTML = "<th><label>"+album.artist+"</label></th>";
+                            row.insertCell(1).outerHTML = "<th><label>"+album.title+"</label></th>";
+                            row.insertCell(2).outerHTML = "<th><label id=\"genres\">"+properGenres+"</label></th>";
+                            row.insertCell(3).outerHTML = "<th><a href=/Musify/musify/edit/"+parseInt(album.id)+" class=editLink value="+album.id+">Edit</a></th>";
+                            row.insertCell(4).outerHTML = "<th><a href=/Musify/musify/delete/"+parseInt(album.id)+" class=deleteLink value="+album.id+">Delete</a></th>";
+                        }
                     }});
                 $('#pageHeader').html("Search results for:<br/>Title: "+formData.title+", Artist: "+formData.artist+", Genre: "+formData.genre);
             });
@@ -40,8 +50,19 @@
             $("#clearButton").click(function(event) {
                event.preventDefault();
                 let url = "${createLink(controller:'Musify', action:'search')}";
-                $.ajax({url: url, success: function(result) {
-                        $("#tableDiv").html(result);
+                $.ajax({url: url, dataType: "json", success: function(result) {
+                        $("#myTable").html("<tr><th class=tableColumnHeader>Artist</th><th class=tableColumnHeader>Title</th> <th class=tableColumnHeader>Genres</th> <th/> <th/> </tr>");
+                        for(album of result)
+                        {
+                            let properGenres = album.genres.toString().split(',').join(', ');
+                            console.log(properGenres);
+                            let row = document.getElementById("myTable").insertRow(1);
+                            row.insertCell(0).outerHTML = "<th><label>"+album.artist+"</label></th>";
+                            row.insertCell(1).outerHTML = "<th><label>"+album.title+"</label></th>";
+                            row.insertCell(2).outerHTML = "<th><label id=\"genres\">"+properGenres+"</label></th>";
+                            row.insertCell(3).outerHTML = "<th><a href=/Musify/musify/edit/"+parseInt(album.id)+" class=editLink value="+album.id+">Edit</a></th>";
+                            row.insertCell(4).outerHTML = "<th><a href=/Musify/musify/delete/"+parseInt(album.id)+" class=deleteLink value="+album.id+">Delete</a></th>";
+                        }
                     }});
                 $('#titleField').val("");
                 $('#artistField').val("");
@@ -55,7 +76,7 @@
 <body>
 <h1 id="pageHeader">These are all your albums</h1>
     <div id="tableDiv">
-        <table class="table table-striped table-bordered">
+        <table id="myTable" class="table table-striped table-bordered">
             <tr>
                 <th class="tableColumnHeader">Artist</th>
                 <th class="tableColumnHeader">Title</th>
