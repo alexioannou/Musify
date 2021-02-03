@@ -33,7 +33,7 @@ class MusifyController {
     def listAlbums() {
         def myAlbums = musifyService.getAlbums()
         myAlbums.albumsResults.each{alb ->
-            def albumGenres
+            def albumGenres = []
             myAlbums.albumGenresResults.each {gen ->
                 if(gen.albumid == alb.id)
                     albumGenres.add(gen.name)
@@ -49,7 +49,7 @@ class MusifyController {
         {
             myAlbums = musifyService.searchAlbums(params.title, params.artist, params.genre)
             myAlbums.albumSearchResults.each{alb ->
-                def albumGenres
+                def albumGenres = []
                 myAlbums.albumGenreSearchResults.each {gen ->
                     if(gen.albumid == alb.id)
                         albumGenres.add(gen.name)
@@ -61,15 +61,16 @@ class MusifyController {
         else
         {
             myAlbums = musifyService.getAlbums()
-            myAlbums.albumSearchResults.each{alb ->
-                def albumGenres
-                myAlbums.albumGenreSearchResults.each {gen ->
+            myAlbums.albumsResults.each{alb ->
+                def albumGenres = []
+                myAlbums.albumGenresResults.each {gen ->
                     if(gen.albumid == alb.id)
                         albumGenres.add(gen.name)
                 }
                 alb.genres = albumGenres
             }
-            return render(view: 'searchResults', model: [albums: myAlbums.albumSearchResults])
+            println myAlbums.albumsResults
+            return render(view: 'searchResults', model: [albums: myAlbums.albumsResults])
         }
     }
 
