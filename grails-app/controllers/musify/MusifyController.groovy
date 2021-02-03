@@ -32,14 +32,14 @@ class MusifyController {
 
     def listAlbums() {
         def myAlbums = musifyService.getAlbums()
-        myAlbums[0].each{alb ->
+        myAlbums.albumsResults.each{alb ->
             alb.genres = new ArrayList<>()
-            myAlbums[1].each {gen ->
+            myAlbums.albumGenresResults.each {gen ->
                 if(gen.albumid == alb.id)
                     alb.genres.add(gen.name)
             }
         }
-        [ albums : myAlbums[0], criteria: ["", "", ""]]
+        [ albums : myAlbums.albumsResults]
     }
 
     def search() {
@@ -47,26 +47,26 @@ class MusifyController {
         if(params.title || params.artist || params.genre)
         {
             myAlbums = musifyService.searchAlbums(params.title, params.artist, params.genre)
-            myAlbums[0].each{alb ->
+            myAlbums.albumSearchResults.each{alb ->
                 alb.genres = new ArrayList<>()
-                myAlbums[1].each {gen ->
+                myAlbums.albumGenreSearchResults.each {gen ->
                     if(gen.albumid == alb.id)
                         alb.genres.add(gen.name)
                 }
             }
-            return render(view: 'searchResults', model: [albums: myAlbums[0], criteria: params.criteria]);
+            return render(view: 'searchResults', model: [albums: myAlbums.albumSearchResults]);
         }
         else
         {
             myAlbums = musifyService.getAlbums()
-            myAlbums[0].each{alb ->
+            myAlbums.albumSearchResults.each{alb ->
                 alb.genres = new ArrayList<>()
-                myAlbums[1].each {gen ->
+                myAlbums.albumGenreSearchResults.each {gen ->
                     if(gen.albumid == alb.id)
                         alb.genres.add(gen.name)
                 }
             }
-            return render(view: 'searchResults', model: [albums: myAlbums[0], criteria: ["", "", ""]]);
+            return render(view: 'searchResults', model: [albums: myAlbums.albumSearchResults]);
         }
     }
 
