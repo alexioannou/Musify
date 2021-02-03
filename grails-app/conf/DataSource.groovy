@@ -1,3 +1,11 @@
+dataSource {
+    pooled = true
+    driverClassName = "org.postgresql.Driver"
+    username = "postgres"
+    password = "admin"
+    dialect = "org.hibernate.dialect.PostgreSQLDialect"
+}
+
 hibernate {
     cache.use_second_level_cache = true
     cache.use_query_cache = true
@@ -5,34 +13,22 @@ hibernate {
 }
 
 environments {
-
     development {
-        pooled = true
-        dbCreate = "none"
-        driverClassName = "org.postgresql.Driver"
-        url = "jdbc:postgresql://localhost:5432/musify"
-        username = "postgres"
-        password = "admin"
-        dialect = "org.hibernate.dialect.PostgreSQLDialect"
+        dataSource {
+            dbCreate = "none"
+            url = "jdbc:postgresql://localhost:5432/musify"
+        }
     }
-
     test {
-        pooled = true
-        dbCreate = "none"
-        driverClassName = "org.postgresql.Driver"
-        url = "jdbc:postgresql://localhost:5432/musify"
-        username = "postgres"
-        password = "admin"
-        dialect = "org.hibernate.dialect.PostgreSQLDialect"
+        dataSource {
+            dbCreate = "none"
+            url = "jdbc:postgresql://localhost:5432/musify"
+        }
     }
-
     production {
-        pooled = true
-        dbCreate = "none"
-        driverClassName = "org.postgresql.Driver"
-        url = "jdbc:postgresql://localhost:5432/musify"
-        username = "postgres"
-        password = "admin"
-        dialect = "org.hibernate.dialect.PostgreSQLDialect"
+        dataSource {
+            dbCreate = "none"
+            url = "jdbc:postgresql://localhost:5432/musify"
+        }
     }
 }
