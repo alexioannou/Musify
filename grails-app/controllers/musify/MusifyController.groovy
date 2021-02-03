@@ -43,7 +43,7 @@ class MusifyController {
     }
 
     def search() {
-        def myAlbums;
+        def myAlbums
         if(params.title || params.artist || params.genre)
         {
             myAlbums = musifyService.searchAlbums(params.title, params.artist, params.genre)
@@ -54,7 +54,7 @@ class MusifyController {
                         alb.genres.add(gen.name)
                 }
             }
-            return render(view: 'searchResults', model: [albums: myAlbums.albumSearchResults]);
+            return render(view: 'searchResults', model: [albums: myAlbums.albumSearchResults])
         }
         else
         {
@@ -66,7 +66,7 @@ class MusifyController {
                         alb.genres.add(gen.name)
                 }
             }
-            return render(view: 'searchResults', model: [albums: myAlbums.albumSearchResults]);
+            return render(view: 'searchResults', model: [albums: myAlbums.albumSearchResults])
         }
     }
 
