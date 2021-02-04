@@ -4,11 +4,25 @@
     justify-content: center;
     min-height: 140px;
     width: 100%;
-    margin-bottom: 25px;
-    text-align: center;
+    /*margin-bottom: 25px;*/
     border-style: solid;
     border-color: #dddddd;
     cursor: default;
+    text-align: center;
+}
+
+.jumbotron{
+    text-align: center;
+    padding: 10px 0 10px 0;
+    margin: 0;
+}
+
+#headerMenu {
+    width: 100%;
+    text-align: center;
+    margin-top: 25px;
+    border-style: solid;
+    border-color: #dddddd;
 }
 
 #formDiv {
@@ -26,12 +40,20 @@ form {
     cursor: default;
 }
 
+select {
+    text-align: center;
+    min-height: 150px;
+    padding-bottom: 50px;
+    margin-bottom: 50px;
+}
+
 .button {
     margin: 0 20px;
     width: 100px;
 }
 
 .tableColumnHeader {
+    max-width: 200px;
     font-size: xx-large;
     text-decoration: underline;
 }

@@ -11,22 +11,10 @@
     <title>Edit Album</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'musify.css')}" type="text/css">
-    <style>
-        select {
-            text-align: center;
-            display: block;
-            min-height: 150px;
-            margin: 0 auto 50px auto;
-        }
-    </style>
-    <script>
-        $(document).ready(function() {
-
-        });
-    </script>
 </head>
 
 <body>
+    <g:applyLayout name="headerLayout"/>
     <h1 id="pageHeader">Edit your album</h1>
     <div id="formDiv">
         <form id="myForm" name="myForm" controller="Musify">
@@ -40,9 +28,12 @@
                     <option value=${genre.id}>${genre.name}</option>
                 </g:each>
             </select>
-            <g:actionSubmit class="button" id="confirmButton" value="Confirm" params="['id': album.id]" action="update"/>
-            <g:actionSubmit value="Cancel" action="listAlbums" class="button"/>
+            <div>
+                <g:actionSubmit class="button" id="confirmButton" value="Confirm" params="['id': album.id]" action="update"/>
+                <g:actionSubmit value="Cancel" action="listAlbums" class="button"/>
+            </div>
         </form>
     </div>
+    <g:applyLayout name="footerLayout"/>
 </body>
 </html>

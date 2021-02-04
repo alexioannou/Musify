@@ -15,21 +15,26 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
-
+            console.log("TESTING")
             //Search
             $("#searchButton").click(function(event) {
                 event.preventDefault();
+                console.log("TESTING1")
                 if($('#titleField').val() == "" && $('#artistField').val() == "" && $('#genreField').val() == "")
                 {
                     alert("Please fill at least one field");
                     return;
                 }
+                console.log("TESTING2")
                 let formData = {};
                 formData.title = $('#titleField').val();
                 formData.artist = $('#artistField').val();
                 formData.genre = $('#genreField').val();
+                console.log("TESTING3")
                 let url = "${createLink(controller:'Musify', action:'search')}";
+                console.log("TESTING4")
                 $.ajax({url: url, data: formData, dataType: "json", success: function(result) {
+                        console.log("TESTING5")
                         $("#myTable").html("<tr><th class=tableColumnHeader>Artist</th><th class=tableColumnHeader>Title</th> <th class=tableColumnHeader>Genres</th> <th/> <th/> </tr>");
                         for(album of result)
                         {
@@ -43,6 +48,7 @@
                             row.insertCell(4).outerHTML = "<th><a href=/Musify/musify/delete/"+parseInt(album.id)+" class=deleteLink value="+album.id+">Delete</a></th>";
                         }
                     }});
+                console.log("TESTING6")
                 $('#pageHeader').html("Search results for:<br/>Title: "+formData.title+", Artist: "+formData.artist+", Genre: "+formData.genre);
             });
 
@@ -74,7 +80,8 @@
 </head>
 
 <body>
-<h1 id="pageHeader">These are all your albums</h1>
+    <g:applyLayout name="headerLayout"/>
+    <h1 id="pageHeader">These are all your albums</h1>
     <div id="tableDiv">
         <table id="myTable" class="table table-striped table-bordered">
             <tr>
@@ -89,8 +96,8 @@
                     <th><label>${album.artist}</label></th>
                     <th><label>${album.title}</label></th>
                     <th><label id="genres"><g:eachJoin in="${album.genres}" var="genre" delimiter=", ">${genre}</g:eachJoin></label></th>
-                    <th><g:link class="editLink" value="${album.id}" action="edit" params="['id': album.id]">Edit</g:link></th>
-                    <th><g:link class="deleteLink" value="${album.id}" action="delete" params="['id': album.id]">Delete</g:link></th>
+                    <th><g:link class="btn btn-primary" value="${album.id}" action="edit" params="['id': album.id]">Edit</g:link></th>
+                    <th><g:link class="btn btn-danger" value="${album.id}" action="delete" params="['id': album.id]">Delete</g:link></th>
                 </tr>
             </g:each>
         </table>
@@ -109,5 +116,6 @@
             <g:actionSubmit value="New..." action="add" class="button"/>
         </form>
     </div>
+    <g:applyLayout name="footerLayout"/>
 </body>
 </html>

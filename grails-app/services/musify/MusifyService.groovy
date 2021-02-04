@@ -52,8 +52,7 @@ class MusifyService {
                 if(gen.albumid == alb.id)
                     albumGenres.add(gen.name)
             }
-            alb.genres = albumGenres
-            albumObject.genres = alb.genres
+            albumObject.genres = albumGenres
             myJson.add(albumObject)
         }
         return myJson
