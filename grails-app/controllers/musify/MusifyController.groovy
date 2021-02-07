@@ -17,7 +17,6 @@ class MusifyController {
 
     def create() {
         musifyService.createAlbumServiceMethod(params.title, params.artist, params.genres)
-        println params.title.getClass()
         redirect (action: "listAlbums")
     }
 
