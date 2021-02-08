@@ -56,6 +56,6 @@ class MusifyController {
     }
 
     def test() {
-
+        render "You got rickrolled!"
     }
 }

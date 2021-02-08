@@ -46,9 +46,14 @@ class UrlMappings {
                 controller = "MusifyRest"
                 action = "getGenreOfAlbum"
         }
+
+        "/musifyRest/$action?"{
+                view = "/illegalUrl"
+        }
+
         "/$controller/$action?/$id?(.$format)?"{
             constraints {
-                // apply constraints here
+
             }
         }
 	}
