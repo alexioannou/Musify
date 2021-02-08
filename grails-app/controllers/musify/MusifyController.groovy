@@ -11,8 +11,8 @@ class MusifyController {
     }
 
     def add() {
-        def myStyles = musifyService.fetchAllStyles()
-        [genres : myStyles]
+        def myGenres = musifyService.fetchAllGenres()
+        [genres : myGenres]
     }
 
     def create() {
@@ -21,13 +21,17 @@ class MusifyController {
     }
 
     def edit() {
-        def myStyles = musifyService.fetchAllStyles()
-        def myAlbum = musifyService.fetchSingleAlbum(params.id)
-        [album: myAlbum, genres : myStyles]
+        def allGenres = musifyService.fetchAllGenres()
+        def myAlbum = musifyService.fetchSingleAlbum(params.id.toInteger())
+        def myAlbumGenres = musifyService.fetchAlbumGenres(params.id.toInteger())
+        myAlbum.genres = myAlbumGenres
+        println myAlbum
+        println allGenres
+        [album: myAlbum, genres : allGenres]
     }
 
     def update() {
-        musifyService.updateAlbumsServiceMethod(params.id, params.title, params.artist, params.genres)
+        musifyService.updateAlbumsServiceMethod(params.id.toInteger(), params.title, params.artist, params.genres)
         redirect (action: "listAlbums")
     }
 
@@ -43,11 +47,11 @@ class MusifyController {
         else
             myJson = musifyService.fetchAllAlbumsAsJSON()
         response.setContentType("application/json")
-        return render(myJson as JSON)
+        render myJson as JSON
     }
 
     def delete() {
-        musifyService.deleteAlbum(params.id)
+        musifyService.deleteAlbum(params.id.id.toInteger())
         redirect (action: "listAlbums")
     }
 

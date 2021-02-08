@@ -1,14 +1,19 @@
 class UrlMappings {
 
 	static mappings = {
+
+        "/"(view:"/index")
+        "500"(view:'/error')
+
         "/albums" {
                 controller = "MusifyRest"
                 action = [GET: "getAllAlbums", POST: "postAlbum"]
         }
 
+        //Can't send form-data through PUT, so doing a POST & redirecting it to the PUT Controller Action
         "/albums/$albumId?" {
                 controller = "MusifyRest"
-                action = "getAlbum"
+                action = [GET: "getAlbum", POST: "putAlbum", DELETE: "deleteAlbum"]
         }
 
         "/genres/$genreId?/albums" {
@@ -26,9 +31,10 @@ class UrlMappings {
                 action = [GET: "getAllGenres", POST: "postGenre"]
         }
 
+        //Can't send form-data through PUT, so doing a POST & redirecting it to the PUT Controller Action
         "/genres/$genreId?" {
                 controller = "MusifyRest"
-                action = "getGenre"
+                action = [GET: "getGenre", POST: "putGenre", DELETE: "deleteGenre"]
         }
 
         "/albums/$albumId?/genres" {
@@ -40,8 +46,10 @@ class UrlMappings {
                 controller = "MusifyRest"
                 action = "getGenreOfAlbum"
         }
-
-        "/"(view:"/index")
-        "500"(view:'/error')
+        "/$controller/$action?/$id?(.$format)?"{
+            constraints {
+                // apply constraints here
+            }
+        }
 	}
 }

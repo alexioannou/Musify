@@ -11,6 +11,18 @@
     <title>Edit Album</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'musify.css')}" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        $(window).load(function() {
+            var genres = ${album.genres?.genreId};
+            $('#genres > option').each(function () {
+                if (genres.includes(parseInt(this.value)))
+                {
+                    this.selected = true;
+                }
+            });
+        });
+    </script>
 </head>
 
 <body>

@@ -5,6 +5,7 @@ import groovy.json.JsonOutput
 class MusifyRestController {
 
     def musifyRestService
+    def musifyService
 
     def index() {
 
@@ -96,6 +97,34 @@ class MusifyRestController {
         def genreCreated = JsonOutput.toJson(musifyRestService.createGenre(params.name))
         response.status = 201;
         render genreCreated
+    }
+
+    def putAlbum()
+    {
+        def albumUpdated = JsonOutput.toJson(musifyRestService.updateAlbum(params.albumId.toInteger(), params.title, params.artist, params.genres))
+        response.status = 200;
+        render albumUpdated
+    }
+
+    def putGenre()
+    {
+        def genreUpdated = JsonOutput.toJson(musifyRestService.updateGenre(params.genreId.toInteger(), params.name))
+        response.status = 200;
+        render genreUpdated
+    }
+
+    def deleteAlbum()
+    {
+        def albumDeleted = JsonOutput.toJson(musifyRestService.deleteAlbum(params.albumId.toInteger()))
+        response.status = 200;
+        render albumDeleted+"\nYes I know 204 was the \"more correct\" Status Code here, but I actually sent back a response so I used 200 instead"
+    }
+
+    def deleteGenre()
+    {
+        def genreDeleted = JsonOutput.toJson(musifyRestService.deleteGenre(params.genreId.toInteger()))
+        response.status = 200;
+        render genreDeleted+"\nYes I know 204 was the \"more correct\" Status Code here, but I actually sent back a response so I used 200 instead"
     }
 
     def test() {
