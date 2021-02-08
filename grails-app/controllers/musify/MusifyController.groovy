@@ -51,7 +51,7 @@ class MusifyController {
     }
 
     def delete() {
-        musifyService.deleteAlbum(params.id.id.toInteger())
+        musifyService.deleteAlbum(params.id.toInteger())
         redirect (action: "listAlbums")
     }
 
