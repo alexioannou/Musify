@@ -16,27 +16,25 @@ class MusifyController {
     }
 
     def create() {
-        musifyService.createAlbumServiceMethod(params.title, params.artist, params.genres)
+        musifyService.createAlbum(params.title, params.artist, params.genres)
         redirect (action: "listAlbums")
     }
 
     def edit() {
         def allGenres = musifyService.fetchAllGenres()
         def myAlbum = musifyService.fetchSingleAlbum(params.id.toInteger())
-        def myAlbumGenres = musifyService.fetchAlbumGenres(params.id.toInteger())
+        def myAlbumGenres = musifyService.fetchGenresOfAlbum(params.id.toInteger())
         myAlbum.genres = myAlbumGenres
-        println myAlbum
-        println allGenres
         [album: myAlbum, genres : allGenres]
     }
 
     def update() {
-        musifyService.updateAlbumsServiceMethod(params.id.toInteger(), params.title, params.artist, params.genres)
+        musifyService.updateAlbum(params.id.toInteger(), params.title, params.artist, params.genres)
         redirect (action: "listAlbums")
     }
 
     def listAlbums() {
-        def myAlbums = musifyService.listAlbumsServiceMethod()
+        def myAlbums = musifyService.listAlbums()
         [ albums : myAlbums]
     }
 
@@ -56,6 +54,6 @@ class MusifyController {
     }
 
     def test() {
-        render "You got rickrolled!"
+        render "*gesture* This is not the Action you are looking for"
     }
 }

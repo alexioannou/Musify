@@ -9,7 +9,7 @@ class MusifyService {
     def dataSource
 
     //-------------------------------------------------------------- CREATE --------------------------------------------------------------
-    def createAlbumServiceMethod(String title, String artist, def genres)   //Creates an Album in the Database
+    def createAlbum(String title, String artist, def genres)   //Creates an Album in the Database
     {
         Sql sql = new Sql(dataSource)
         def nextIdResult = sql.firstRow("SELECT nextval('albums_id_sequence')")
@@ -21,7 +21,7 @@ class MusifyService {
     }
 
     //-------------------------------------------------------------- List --------------------------------------------------------------
-    def listAlbumsServiceMethod()   //Lists all Albums in the Database
+    def listAlbums()   //Lists all Albums in the Database
     {
         def albumList = fetchAllAlbums()
         albumList.albumsResults.each{alb ->
@@ -38,8 +38,8 @@ class MusifyService {
     //-------------------------------------------------------------- SEARCH --------------------------------------------------------------
     def searchAlbumsAsJSON(String title, String artist, String genre)   //Searches for Albums in the Database
     {
-        def albumSearchResults = searchAlbumsGetAlbums(title, artist, genre)
-        def albumGenreSearchResults = searchAlbumsGetGenres(title, artist, genre)
+        def albumSearchResults = searchAlbums(title, artist, genre)
+        def albumGenreSearchResults = searchGenresOfAlbums(title, artist, genre)
         def myJson = []
         def albumList = [albumSearchResults: albumSearchResults, albumGenreSearchResults: albumGenreSearchResults]
         albumList.albumSearchResults.each{alb ->
@@ -58,7 +58,7 @@ class MusifyService {
         return myJson
     }
 
-    def searchAlbumsGetAlbums(String title, String artist, String genre)    //Fetches the correct Albums
+    private def searchAlbums(String title, String artist, String genre)    //Fetches the correct Albums
     {
         Sql sql = new Sql(dataSource)
         return sql.rows("""SELECT DISTINCT albums.id,albums.title, albums.artist
@@ -66,7 +66,7 @@ class MusifyService {
                                                     WHERE genres.id = genreId AND albums.id = albumid AND (albums.title = ${title} OR albums.artist = ${artist} OR genres.name = ${genre})""")
     }
 
-    def searchAlbumsGetGenres(String title, String artist, String genre)    //Fetches all the Genres that correspond to the correct albums
+    private def searchGenresOfAlbums(String title, String artist, String genre)    //Fetches all the Genres that correspond to the correct albums
     {
         Sql sql = new Sql(dataSource)
         return sql.rows("""SELECT correctAlbums.albumid, genres.name 
@@ -83,49 +83,20 @@ class MusifyService {
     //}
 
     //-------------------------------------------------------------- UPDATE --------------------------------------------------------------
-    def updateAlbumsServiceMethod(int id, String title, String artist, def genres)   //Updates an Album in the database
+    def updateAlbum(int id, String title, String artist, def genres)   //Updates an Album in the database
     {
-        updateAlbum(id, title, artist)
-        def albumGenresResults = fetchAlbumGenres(id)
-        if(genres)
-        {
-            albumGenresResults.each {albGen ->
-                if(!genres.contains(albGen.genreId.toString()))
-                    updateAlbumRemoveGenre(id, albGen.genreId)
-            }
-            //For each Genre selected in the Edit form
-            genres.each { gen ->
-                boolean flag = false; //false = not associated
-                albumGenresResults.find {albGen ->
-                    if (albGen.genreId == gen.toInteger())    //It's already associated with this album
-                    {
-                        flag = true;
-                        return true;
-                    }
-                    return false    //It's not already associated with this album
-                }
-                if(!flag)    //Associate it with this album
-                    updateAlbumAddGenre(id, gen.toInteger())
-            }
+        clearAlbumGenres(id)
+        genres.each{ gen ->
+            addGenreToAlbum(id, gen.toInteger())
         }
-    }
-
-    def updateAlbumRemoveGenre(int albumId, int genreId)    //Removes Genres from the Album
-    {
         Sql sql = new Sql(dataSource)
-        sql.execute("DELETE FROM represents WHERE albumid = ${albumId} AND genreId = ${genreId}")
+        sql.execute("UPDATE albums SET title = ${title}, artist = ${artist} WHERE id = ${id}")
     }
 
-    def updateAlbumAddGenre(int albumId, int genreId)   //Adds Genres to the Album
+    def addGenreToAlbum(int albumId, int genreId)   //Adds Genres to the Album
     {
         Sql sql = new Sql(dataSource)
         sql.execute("INSERT INTO represents VALUES(${albumId}, ${genreId})")
-    }
-
-    def updateAlbum(int albumId, String title, String artist)    //Changes the Album's info
-    {
-        Sql sql = new Sql(dataSource)
-        sql.execute("UPDATE albums SET title = ${title}, artist = ${artist} WHERE id = ${albumId}")
     }
 
     //-------------------------------------------------------------- DELETE --------------------------------------------------------------
@@ -133,6 +104,12 @@ class MusifyService {
     {
         Sql sql = new Sql(dataSource)
         sql.execute("DELETE FROM albums WHERE id = ${id}")
+    }
+
+    def clearAlbumGenres(int id)
+    {
+        Sql sql = new Sql(dataSource)
+        sql.execute("DELETE FROM represents WHERE albumId = ${id}")
     }
 
     //-------------------------------------------------------------- FETCH --------------------------------------------------------------
@@ -172,7 +149,7 @@ class MusifyService {
         return myJson
     }
 
-    def fetchAlbumGenres(int id)   //Fetches the Genres of an Album from the Database
+    def fetchGenresOfAlbum(int id)   //Fetches the Genres of an Album from the Database
     {
         Sql sql = new Sql(dataSource)
         sql.rows("Select genreId FROM represents WHERE albumid = ${id}")

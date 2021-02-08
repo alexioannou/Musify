@@ -31,7 +31,7 @@
     <div id="formDiv">
         <form id="myForm" name="myForm" controller="Musify">
             <label class="formLabel" id="titleLabel" for="titleField">Title</label>
-            <input class="form-control" type="text" id="titleField" value="${album.title}"name="title"/><br/>
+            <input class="form-control" type="text" id="titleField" value="${album.title}" name="title"/><br/>
             <label class="formLabel" id="artistLabel" for="artistField">Artist </label>
             <input class="form-control" type="text" id="artistField" value="${album.artist}" name="artist"/><br/>
             <label for="genres" id="genresLabel">Genres</label><br/>

@@ -15,31 +15,24 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
-            console.log("TESTING")
             //Search
             $("#searchButton").click(function(event) {
                 event.preventDefault();
-                console.log("TESTING1")
                 if($('#titleField').val() == "" && $('#artistField').val() == "" && $('#genreField').val() == "")
                 {
                     alert("Please fill at least one field");
                     return;
                 }
-                console.log("TESTING2")
                 let formData = {};
                 formData.title = $('#titleField').val();
                 formData.artist = $('#artistField').val();
                 formData.genre = $('#genreField').val();
-                console.log("TESTING3")
                 let url = "${createLink(controller:'Musify', action:'search')}";
-                console.log("TESTING4")
                 $.ajax({url: url, data: formData, dataType: "json", success: function(result) {
-                        console.log("TESTING5")
                         $("#myTable").html("<tr><th class=tableColumnHeader>Artist</th><th class=tableColumnHeader>Title</th> <th class=tableColumnHeader>Genres</th> <th/> <th/> </tr>");
                         for(album of result)
                         {
                             let properGenres = album.genres.toString().split(',').join(', ');
-                            console.log(properGenres);
                             let row = document.getElementById("myTable").insertRow(1);
                             row.insertCell(0).outerHTML = "<th><label>"+album.artist+"</label></th>";
                             row.insertCell(1).outerHTML = "<th><label>"+album.title+"</label></th>";
@@ -48,7 +41,6 @@
                             row.insertCell(4).outerHTML = "<th><a href=/Musify/musify/delete/"+parseInt(album.id)+" class=deleteLink value="+album.id+">Delete</a></th>";
                         }
                     }});
-                console.log("TESTING6")
                 $('#pageHeader').html("Search results for:<br/>Title: "+formData.title+", Artist: "+formData.artist+", Genre: "+formData.genre);
             });
 
@@ -61,7 +53,6 @@
                         for(album of result)
                         {
                             let properGenres = album.genres.toString().split(',').join(', ');
-                            console.log(properGenres);
                             let row = document.getElementById("myTable").insertRow(1);
                             row.insertCell(0).outerHTML = "<th><label>"+album.artist+"</label></th>";
                             row.insertCell(1).outerHTML = "<th><label>"+album.title+"</label></th>";
