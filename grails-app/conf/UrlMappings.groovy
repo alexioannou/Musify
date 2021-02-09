@@ -21,11 +21,6 @@ class UrlMappings {
                 action = "getAllAlbumsOfGenre"
         }
 
-        "/genres/$genreId?/albums/$albumId" {
-                controller = "MusifyRest"
-                action = "getAlbumOfGenre"
-        }
-
         "/genres" {
                 controller = "MusifyRest"
                 action = [GET: "getAllGenres", POST: "postGenre"]
@@ -40,11 +35,6 @@ class UrlMappings {
         "/albums/$albumId?/genres" {
                 controller = "MusifyRest"
                 action = "getAllGenresOfAlbum"
-        }
-
-        "/albums/$albumId?/genres/$genreId?" {
-                controller = "MusifyRest"
-                action = "getGenreOfAlbum"
         }
 
         "/musifyRest/$action?"{

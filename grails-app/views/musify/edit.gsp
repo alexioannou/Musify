@@ -14,7 +14,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script>
         $(window).load(function() {
-            var genres = ${album.genres?.genreId};
+            var genres = ${album.genres?.id};
             $('#genres > option').each(function () {
                 if (genres.includes(parseInt(this.value)))
                 {

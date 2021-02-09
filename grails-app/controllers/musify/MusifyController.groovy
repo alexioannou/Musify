@@ -23,8 +23,6 @@ class MusifyController {
     def edit() {
         def allGenres = musifyService.fetchAllGenres()
         def myAlbum = musifyService.fetchSingleAlbum(params.id.toInteger())
-        def myAlbumGenres = musifyService.fetchGenresOfAlbum(params.id.toInteger())
-        myAlbum.genres = myAlbumGenres
         [album: myAlbum, genres : allGenres]
     }
 

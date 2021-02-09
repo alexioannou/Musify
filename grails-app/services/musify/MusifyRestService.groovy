@@ -26,12 +26,6 @@ class MusifyRestService {
         def albumsResults = sql.rows("SELECT id, title, artist FROM albums, represents WHERE albums.id = albumId AND genreId = ${genreId}")
     }
 
-    def requestAlbumOfGenre(int genreId, int albumId)
-    {
-        Sql sql = new Sql(dataSource)
-        def albumResult = sql.firstRow("SELECT id, title, artist FROM albums, represents WHERE id = albumId AND id = ${albumId} AND genreId = ${genreId}")
-    }
-
     def requestAllGenres()
     {
         Sql sql = new Sql(dataSource)
@@ -48,12 +42,6 @@ class MusifyRestService {
     {
         Sql sql = new Sql(dataSource)
         def genresResults = sql.rows("SELECT id, name FROM genres, represents WHERE genres.id = genreId AND albumId = ${albumId}")
-    }
-
-    def requestGenreOfAlbum(int albumId, int genreId)
-    {
-        Sql sql = new Sql(dataSource)
-        def genreResult = sql.firstRow("SELECT id, name FROM genres, represents WHERE genres.id = genreId AND albumId = ${albumId} AND genres.id = ${genreId}")
     }
 
     def createAlbum(String title, String artist, def genres)

@@ -14,64 +14,42 @@ class MusifyRestController {
     {
         //example:  /albums
         def albums = musifyRestService.requestAllAlbums()
-        def json = groovy.json.JsonOutput.toJson(albums)
-        render json
+        render JsonOutput.toJson(albums)
     }
 
     def getAlbum()
     {
         //example:   /albums/$albumId
         def album = musifyRestService.requestAlbum(params.albumId.toInteger())
-        def json = groovy.json.JsonOutput.toJson(album)
-        render json
+        render JsonOutput.toJson(album)
     }
 
     def getAllAlbumsOfGenre()
     {
         //example:  /genres/$genreId/albums
         def albums = musifyRestService.requestAllAlbumsOfGenre(params.genreId.toInteger())
-        def json = groovy.json.JsonOutput.toJson(albums)
-        render json
-    }
-
-    def getAlbumOfGenre()
-    {
-        //example:  /genres/$genreId/albums/$albumId
-        def album = musifyRestService.requestAlbumOfGenre(params.genreId.toInteger(), params.albumId.toInteger())
-        def json = groovy.json.JsonOutput.toJson(album)
-        render json
+        render JsonOutput.toJson(albums)
     }
 
     def getAllGenres()
     {
         //example:  /genres
         def genres = musifyRestService.requestAllGenres()
-        def json = groovy.json.JsonOutput.toJson(genres)
-        render json
+        render JsonOutput.toJson(genres)
     }
 
     def getGenre()
     {
         //example:  /genres/$genreId
         def genre = musifyRestService.requestGenre(params.genreId.toInteger())
-        def json = groovy.json.JsonOutput.toJson(genre)
-        render json
+        render JsonOutput.toJson(genre)
     }
 
     def getAllGenresOfAlbum()
     {
         //example:  /albums/$albumId/genres
         def genres = musifyRestService.requestAllGenresOfAlbum(params.albumId.toInteger())
-        def json = groovy.json.JsonOutput.toJson(genres)
-        render json
-    }
-
-    def getGenreOfAlbum()
-    {
-        //example:  /albums/$albumId/genres/$genreId
-        def genre = musifyRestService.requestGenreOfAlbum(params.albumId.toInteger(), params.genreId.toInteger())
-        def json = groovy.json.JsonOutput.toJson(genre)
-        render json
+        render JsonOutput.toJson(genres)
     }
 
     //-------------------------------------------------------------- POST --------------------------------------------------------------

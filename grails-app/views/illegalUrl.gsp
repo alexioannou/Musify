@@ -12,6 +12,6 @@
 </head>
 
 <body>
-<img src="https://i.kym-cdn.com/entries/icons/mobile/000/028/207/Screen_Shot_2019-01-17_at_4.22.43_PM.jpg" alt="Italian Trulli">
+<img src="https://i.kym-cdn.com/entries/icons/mobile/000/028/207/Screen_Shot_2019-01-17_at_4.22.43_PM.jpg" alt="Wait, that's illegal!">
 </body>
 </html>
