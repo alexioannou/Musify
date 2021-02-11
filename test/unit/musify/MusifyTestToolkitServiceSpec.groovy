@@ -6,8 +6,8 @@ import spock.lang.Specification
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
-@TestFor(MusifyService)
-class AlbumsServiceSpec extends Specification {
+@TestFor(MusifyTestToolkitService)
+class MusifyTestToolkitServiceSpec extends Specification {
 
     def setup() {
     }
