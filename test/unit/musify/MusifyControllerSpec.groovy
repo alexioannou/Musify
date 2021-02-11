@@ -42,11 +42,7 @@ class MusifyControllerSpec extends Specification {
                     return [sampleAlbum1, sampleAlbum2]
                 },
 
-                searchAlbumsAsJSON: {String title, String artist, String genre ->
-                    return [sampleAlbum1, sampleAlbum2]
-                },
-
-                fetchAllAlbumsAsJSON: {
+                searchAlbumsAlongWithGenres: {String title, String artist, String genre ->
                     return [sampleAlbum1, sampleAlbum2]
                 },
 

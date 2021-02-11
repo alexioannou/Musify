@@ -33,15 +33,17 @@ class MusifyController {
 
     def listAlbums() {
         def myAlbums = musifyService.listAlbums()
-        [ albums : myAlbums]
+        [albums : myAlbums]
     }
 
     def search() {
         def myJson
         if(params.title || params.artist || params.genre)
-            myJson = musifyService.searchAlbumsAsJSON(params.title, params.artist, params.genre)
+        {
+            myJson = musifyService.searchAlbumsAlongWithGenres(params.title, params.artist, params.genre)
+        }
         else
-            myJson = musifyService.fetchAllAlbumsAsJSON()
+            myJson = musifyService.listAlbums()
         response.setContentType("application/json")
         render myJson as JSON
     }

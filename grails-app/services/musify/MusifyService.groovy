@@ -14,73 +14,42 @@ class MusifyService {
         Sql sql = new Sql(dataSource)
         def nextIdResult = sql.firstRow("SELECT nextval('albums_id_sequence')")
         int newAlbumId = nextIdResult.nextval
-        sql.execute("INSERT INTO albums VALUES(${newAlbumId}, ${title}, ${artist})")
+        sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${newAlbumId}, ${title}, ${artist})")
         genres.each {gen ->
-            sql.execute("INSERT INTO represents VALUES(${newAlbumId}, ${gen.toInteger()})")
+            sql.executeInsert("INSERT INTO represents(albumId, genreId) VALUES(${newAlbumId}, ${gen.toInteger()})")
         }
+        return newAlbumId
     }
 
     //-------------------------------------------------------------- List --------------------------------------------------------------
     def listAlbums()   //Lists all Albums in the Database
     {
         def albumList = fetchAllAlbums()
-        albumList.albumsResults.each{alb ->
-            def albumGenres = []
-            albumList.albumGenresResults.each {gen ->
+        albumList.allAlbums.each{alb ->
+            alb.genres = []
+            albumList.allAlbumGenres.each {gen ->
                 if(gen.albumid == alb.id)
-                    albumGenres.add(gen.name)
+                {
+                    alb.genres.add([id:gen.id, name:gen.name])
+                }
             }
-            alb.genres = albumGenres
         }
-        return albumList.albumsResults
+        return albumList.allAlbums
     }
 
     //-------------------------------------------------------------- SEARCH --------------------------------------------------------------
-    def searchAlbumsAsJSON(String title, String artist, String genre)   //Searches for Albums in the Database
+    def searchAlbumsAlongWithGenres(String title, String artist, String genre)   //Searches for Albums in the Database
     {
-        def albumSearchResults = searchAlbums(title, artist, genre)
-        def albumGenreSearchResults = searchGenresOfAlbums(title, artist, genre)
-        def myJson = []
-        def albumList = [albumSearchResults: albumSearchResults, albumGenreSearchResults: albumGenreSearchResults]
-        albumList.albumSearchResults.each{alb ->
-            def albumGenres = []
-            def albumObject = [:]
-            albumObject.id = alb.id
-            albumObject.title = alb.title
-            albumObject.artist = alb.artist
-            albumList.albumGenreSearchResults.each {gen ->
-                if(gen.albumid == alb.id)
-                    albumGenres.add(gen.name)
+        def albums = fetchCorrectAlbums(title, artist, genre)
+        albums.each{alb ->
+            def genres = fetchGenresOfAlbum(alb.id)
+            alb.genres = []
+            genres.each {gen ->
+                alb.genres.add(id:gen.id, name:gen.name)
             }
-            albumObject.genres = albumGenres
-            myJson.add(albumObject)
         }
-        return myJson
+        return albums
     }
-
-    private def searchAlbums(String title, String artist, String genre)    //Fetches the correct Albums
-    {
-        Sql sql = new Sql(dataSource)
-        return sql.rows("""SELECT DISTINCT albums.id,albums.title, albums.artist
-                                                    FROM albums, represents, genres 
-                                                    WHERE genres.id = genreId AND albums.id = albumid AND (albums.title = ${title} OR albums.artist = ${artist} OR genres.name = ${genre})""")
-    }
-
-    private def searchGenresOfAlbums(String title, String artist, String genre)    //Fetches all the Genres that correspond to the correct albums
-    {
-        Sql sql = new Sql(dataSource)
-        return sql.rows("""SELECT correctAlbums.albumid, genres.name 
-                                                        FROM represents, genres, (SELECT DISTINCT albumid 
-                                                                FROM albums, represents, genres 
-                                                                WHERE genres.id = genreId AND albums.id = albumid AND (albums.title = ${title} OR albums.artist = ${artist} OR genres.name = ${genre})) AS correctAlbums
-                                                        WHERE represents.genreId = genres.id AND represents.albumid = correctAlbums.albumid""")
-    }
-    //def searchAlbumsSearviceMethod(String title, String artist, String genre)   //Searches for Albums in the Database
-    //{
-    //    def albumSearchResults = searchAlbumsGetAlbums(title, artist, genre)
-    //    def albumGenreSearchResults = searchAlbumsGetGenres(title, artist, genre)
-    //    return [albumSearchResults: albumSearchResults, albumGenreSearchResults: albumGenreSearchResults]
-    //}
 
     //-------------------------------------------------------------- UPDATE --------------------------------------------------------------
     def updateAlbum(int id, String title, String artist, def genres)   //Updates an Album in the database
@@ -117,42 +86,30 @@ class MusifyService {
     {
         Sql sql = new Sql(dataSource)
         def singleAlbumResult = sql.firstRow("Select * FROM albums where id = ${id}")
-        singleAlbumResult.genres = sql.rows("Select genreId as id FROM genres, represents where genres.id = genreId AND albumid = ${id}")
+        singleAlbumResult.genres = sql.rows("Select genreId as id, genres.name FROM genres, represents where genres.id = genreId AND albumid = ${id}")
         return singleAlbumResult
+    }
+
+    def fetchCorrectAlbums(String title, String artist, String genre)    //Fetches the correct Albums
+    {
+        Sql sql = new Sql(dataSource)
+        return sql.rows("""SELECT DISTINCT albums.id, albums.title, albums.artist
+                                                    FROM albums, represents, genres 
+                                                    WHERE genres.id = genreId AND albums.id = albumid AND (albums.title = ${title} OR albums.artist = ${artist} OR genres.name = ${genre})""")
     }
 
     def fetchAllAlbums()    //Fetches all Albums from the Database
     {
         Sql sql = new Sql(dataSource)
         def albumsResults = sql.rows("Select * FROM albums")
-        def albumGenresResults = sql.rows("Select albumid, genres.name FROM represents, genres WHERE genres.id = genreId")
-        return [albumsResults: albumsResults, albumGenresResults: albumGenresResults]
-    }
-
-    def fetchAllAlbumsAsJSON()
-    {
-        def albumList = fetchAllAlbums()
-        def myJson = []
-        albumList.albumsResults.each{alb ->
-            def albumGenres = []
-            def albumObject = [:]
-            albumObject.id = alb.id
-            albumObject.title = alb.title
-            albumObject.artist = alb.artist
-            albumList.albumGenresResults.each {gen ->
-                if(gen.albumid == alb.id)
-                    albumGenres.add(gen.name)
-            }
-            albumObject.genres = albumGenres
-            myJson.add(albumObject)
-        }
-        return myJson
+        def albumGenresResults = sql.rows("Select albumid, genres.id, genres.name FROM represents, genres WHERE genres.id = genreId")
+        return [allAlbums: albumsResults, allAlbumGenres: albumGenresResults]
     }
 
     def fetchGenresOfAlbum(int id)   //Fetches the Genres of an Album from the Database
     {
         Sql sql = new Sql(dataSource)
-        sql.rows("Select genreId FROM represents WHERE albumid = ${id}")
+        sql.rows("Select albumid, genres.id, genres.name FROM represents, genres WHERE genreId = genres.id AND albumid = ${id}")
     }
 
     def fetchAllGenres()    //Fetches all Genres from the Database

@@ -32,7 +32,12 @@
                         $("#myTable").html("<tr><th class=tableColumnHeader>Artist</th><th class=tableColumnHeader>Title</th> <th class=tableColumnHeader>Genres</th> <th/> <th/> </tr>");
                         for(album of result)
                         {
-                            let properGenres = album.genres.toString().split(',').join(', ');
+                            let properGenres = [];
+                            for(genre of album.genres)
+                            {
+                                properGenres.push(genre.name)
+                            }
+                            properGenres = properGenres.toString().split(',').join(', ');
                             let row = document.getElementById("myTable").insertRow(1);
                             row.insertCell(0).outerHTML = "<th><label>"+album.artist+"</label></th>";
                             row.insertCell(1).outerHTML = "<th><label>"+album.title+"</label></th>";
@@ -52,7 +57,12 @@
                         $("#myTable").html("<tr><th class=tableColumnHeader>Artist</th><th class=tableColumnHeader>Title</th> <th class=tableColumnHeader>Genres</th> <th/> <th/> </tr>");
                         for(album of result)
                         {
-                            let properGenres = album.genres.toString().split(',').join(', ');
+                            let properGenres = [];
+                            for(genre of album.genres)
+                            {
+                                properGenres.push(genre.name)
+                            }
+                            properGenres = properGenres.toString().split(',').join(', ');
                             let row = document.getElementById("myTable").insertRow(1);
                             row.insertCell(0).outerHTML = "<th><label>"+album.artist+"</label></th>";
                             row.insertCell(1).outerHTML = "<th><label>"+album.title+"</label></th>";
@@ -86,7 +96,7 @@
                 <tr>
                     <th><label>${album.artist}</label></th>
                     <th><label>${album.title}</label></th>
-                    <th><label id="genres"><g:eachJoin in="${album.genres}" var="genre" delimiter=", ">${genre}</g:eachJoin></label></th>
+                    <th><label id="genres"><g:eachJoin in="${album.genres}" var="genre" delimiter=", ">${genre.name}</g:eachJoin></label></th>
                     <th><g:link class="btn btn-primary" value="${album.id}" action="edit" params="['id': album.id]">Edit</g:link></th>
                     <th><g:link class="btn btn-danger" value="${album.id}" action="delete" params="['id': album.id]">Delete</g:link></th>
                 </tr>
