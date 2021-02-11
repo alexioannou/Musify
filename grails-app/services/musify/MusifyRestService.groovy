@@ -11,37 +11,37 @@ class MusifyRestService {
     def requestAllAlbums()   //Lists all Albums in the Database
     {
         Sql sql = new Sql(dataSource)
-        def albumsResults = sql.rows("Select * FROM albums")
+        return sql.rows("Select * FROM albums")
     }
 
     def requestAlbum(int albumId)
     {
         Sql sql = new Sql(dataSource)
-        def albumResult = sql.firstRow("Select * FROM albums WHERE id = ${albumId}")
+        return sql.firstRow("Select * FROM albums WHERE id = ${albumId}")
     }
 
     def requestAllAlbumsOfGenre(int genreId)
     {
         Sql sql = new Sql(dataSource)
-        def albumsResults = sql.rows("SELECT id, title, artist FROM albums, represents WHERE albums.id = albumId AND genreId = ${genreId}")
+        return sql.rows("SELECT id, title, artist FROM albums, represents WHERE albums.id = albumId AND genreId = ${genreId}")
     }
 
     def requestAllGenres()
     {
         Sql sql = new Sql(dataSource)
-        def genresResults = sql.rows("SELECT * FROM genres")
+        return sql.rows("SELECT * FROM genres")
     }
 
     def requestGenre(int genreId)
     {
         Sql sql = new Sql(dataSource)
-        def albumResult = sql.firstRow("Select * FROM genres WHERE id=${genreId}")
+        return sql.firstRow("Select * FROM genres WHERE id=${genreId}")
     }
 
     def requestAllGenresOfAlbum(int albumId)
     {
         Sql sql = new Sql(dataSource)
-        def genresResults = sql.rows("SELECT id, name FROM genres, represents WHERE genres.id = genreId AND albumId = ${albumId}")
+        return sql.rows("SELECT id, name FROM genres, represents WHERE genres.id = genreId AND albumId = ${albumId}")
     }
 
     def createAlbum(String title, String artist, def genres)
@@ -49,18 +49,19 @@ class MusifyRestService {
         Sql sql = new Sql(dataSource)
         def nextIdResult = sql.firstRow("SELECT nextval('albums_id_sequence')")
         int newAlbumId = nextIdResult.nextval
-        sql.execute("INSERT INTO albums(id, title, artist) VALUES(${newAlbumId}, ${title}, ${artist})")
+        def albumCreated = sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${newAlbumId}, ${title}, ${artist})",
+                ["id", "title", "artist"])
         genres.each {gen ->
-            sql.execute("INSERT INTO represents(albumId, genreId) VALUES(${newAlbumId}, ${Integer.parseInt(gen)})")
+            sql.execute("INSERT INTO represents(albumId, genreId) VALUES(${newAlbumId}, ${gen.toInteger()})")
         }
-        return requestAlbum(newAlbumId)
+        return albumCreated
     }
 
     def updateAlbum(int id, String title, String artist, def genres)
     {
         clearAlbumGenres(id)
         genres.each{ gen ->
-            addNewAlbumGenres(id, gen.toInteger())
+            addNewAlbumGenre(id, gen.toInteger())
         }
         Sql sql = new Sql(dataSource)
         sql.execute("UPDATE albums SET title = ${title}, artist = ${artist} WHERE id = ${id}")
@@ -73,10 +74,10 @@ class MusifyRestService {
         sql.execute("DELETE FROM represents WHERE albumId = ${id}")
     }
 
-    def addNewAlbumGenres(int albumId, int genreId)
+    def addNewAlbumGenre(int albumId, int genreId)
     {
         Sql sql = new Sql(dataSource)
-        sql.execute("INSERT INTO represents VALUES(${albumId}, ${genreId})")
+        sql.executeInsert("INSERT INTO represents(albumid, genreid) VALUES(${albumId}, ${genreId})")
     }
 
     def deleteAlbum(int id)
@@ -92,8 +93,9 @@ class MusifyRestService {
         Sql sql = new Sql(dataSource)
         def nextIdResult = sql.firstRow("SELECT nextval('genres_id_sequence')")
         int newGenreId = nextIdResult.nextval
-        sql.execute("INSERT INTO genreId(id, name) VALUES(${newGenreId}, ${name})")
-        return requestGenre(newGenreId)
+        def genreCreated = sql.executeInsert("INSERT INTO genres(id, name) VALUES(${newGenreId}, ${name})",
+            ["id", "name"]).first()
+        return genreCreated
     }
 
     def updateGenre(int id, String name)

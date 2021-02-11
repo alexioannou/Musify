@@ -11,7 +11,7 @@ class MusifyTestToolkitService {
     def fetchAlbum(int id)
     {
         Sql sql = new Sql(dataSource)
-        sql.firstRow("SELECT * FROM albums WHERE id = ${id}")
+        return sql.firstRow("SELECT * FROM albums WHERE id = ${id}")
     }
     
     /**
@@ -32,7 +32,8 @@ class MusifyTestToolkitService {
     
     def fetchGenre(int id)
     {
-    
+        Sql sql = new Sql(dataSource)
+        return sql.firstRow("SELECT id, name FROM genres WHERE id = ${id}")
     }
 
     def fetchAlbumGenre(int albumId, int genreId)
@@ -58,8 +59,22 @@ class MusifyTestToolkitService {
     {
     
     }
+
+    def persistAlbum(int id, String title, String artist)
+    {
+        Sql sql = new Sql(dataSource)
+        def albumCreated = sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${id}, ${title}, ${artist})")
+        return albumCreated
+    }
+
+    def persistAlbum(def album)
+    {
+        Sql sql = new Sql(dataSource)
+        def albumCreated = sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${album.id}, ${album.title}, ${album.artist})")
+        return albumCreated
+    }
     
-    def persistAlbum(int id, String title, String artist, def genres)
+    def persistAlbumAlongWithGenres(int id, String title, String artist, def genres)
     {
         Sql sql = new Sql(dataSource)
         def albumCreated = sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${id}, ${title}, ${artist})",
@@ -72,7 +87,7 @@ class MusifyTestToolkitService {
         return albumCreated
     }
 
-    def persistAlbum(def album)
+    def persistAlbumAlongWithGenres(def album)
     {
         Sql sql = new Sql(dataSource)
         def albumCreated = sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${album.id}, ${album.title}, ${album.artist})",

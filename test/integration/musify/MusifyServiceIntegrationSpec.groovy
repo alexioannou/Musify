@@ -1,7 +1,6 @@
 package musify
 
 import grails.test.spock.IntegrationSpec
-import groovy.json.JsonOutput
 
 class MusifyServiceIntegrationSpec extends IntegrationSpec {
     
@@ -40,8 +39,8 @@ class MusifyServiceIntegrationSpec extends IntegrationSpec {
     
     def testListAlbums() {
         when:
-            musifyTestToolkitService.persistAlbum(sampleAlbum1)
-            musifyTestToolkitService.persistAlbum(sampleAlbum2)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum1)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum2)
             def albumList = musifyService.listAlbums()
         then:
 //            println JsonOutput.prettyPrint(JsonOutput.toJson(albumList))
@@ -51,9 +50,9 @@ class MusifyServiceIntegrationSpec extends IntegrationSpec {
 
     def testSearchAlbumsAlongWithGenres() {
         when:
-            musifyTestToolkitService.persistAlbum(sampleAlbum1)
-            musifyTestToolkitService.persistAlbum(sampleAlbum2)
-            musifyTestToolkitService.persistAlbum(sampleAlbum3)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum1)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum2)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum3)
             def searchResults = musifyService.searchAlbumsAlongWithGenres(sampleAlbum1.title, sampleAlbum2.artist, sampleAlbum3.genres.name.first())
         then:
 //            println JsonOutput.prettyPrint(JsonOutput.toJson(searchResults))
@@ -64,7 +63,7 @@ class MusifyServiceIntegrationSpec extends IntegrationSpec {
 
     def testUpdateAlbum() {
         when:
-            musifyTestToolkitService.persistAlbum(sampleAlbum1)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum1)
             musifyService.updateAlbum(sampleAlbum1.id, sampleTitle, sampleArtist, sampleGenreIds1)
             def updatedAlbum = musifyTestToolkitService.fetchAlbumAlongWithGenreIds(sampleAlbum1.id)
         then:
@@ -76,7 +75,7 @@ class MusifyServiceIntegrationSpec extends IntegrationSpec {
 
     def testAddGenreToAlbum() {
         when:
-            musifyTestToolkitService.persistAlbum(sampleAlbum1)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum1)
             musifyTestToolkitService.persistGenre(sampleGenre6)
             musifyService.addGenreToAlbum(sampleAlbum1.id, sampleGenre6.id)
             def albumGenreAdded = musifyTestToolkitService.fetchAlbumGenre(sampleAlbum1.id, sampleGenre6.id)
@@ -88,7 +87,7 @@ class MusifyServiceIntegrationSpec extends IntegrationSpec {
 
     def testDeleteAlbum() {
         when:
-            musifyTestToolkitService.persistAlbum(sampleAlbum1)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum1)
             musifyService.deleteAlbum(sampleAlbum1.id)
             def albumDeleted = musifyTestToolkitService.fetchAlbum(sampleAlbum1.id)
         then:
@@ -98,7 +97,7 @@ class MusifyServiceIntegrationSpec extends IntegrationSpec {
 
     def testClearAlbumGenres() {
         when:
-            musifyTestToolkitService.persistAlbum(sampleAlbum1)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum1)
             musifyService.clearAlbumGenres(sampleAlbum1.id)
             def genresCleared = musifyTestToolkitService.fetchAllGenresOfAlbum(sampleAlbum1.id)
         then:
@@ -108,7 +107,7 @@ class MusifyServiceIntegrationSpec extends IntegrationSpec {
 
     def testFetchSingleAlbum() {
         when:
-            musifyTestToolkitService.persistAlbum(sampleAlbum1)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum1)
             def albumFetched = musifyService.fetchSingleAlbum(sampleAlbum1.id)
         then:
 //            println JsonOutput.prettyPrint(JsonOutput.toJson(albumFetched))
@@ -117,9 +116,9 @@ class MusifyServiceIntegrationSpec extends IntegrationSpec {
 
     def testFetchCorrectAlbums() {
         when:
-            musifyTestToolkitService.persistAlbum(sampleAlbum1)
-            musifyTestToolkitService.persistAlbum(sampleAlbum2)
-            musifyTestToolkitService.persistAlbum(sampleAlbum3)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum1)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum2)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum3)
             def fetchedAlbums = musifyService.fetchCorrectAlbums(sampleAlbum1.title, sampleAlbum2.artist, sampleAlbum3.genres.name.first())
         then:
 //            println JsonOutput.prettyPrint(JsonOutput.toJson(fetchedAlbums))
@@ -136,8 +135,8 @@ class MusifyServiceIntegrationSpec extends IntegrationSpec {
 
     def testFetchAllAlbums() {
         when:
-            musifyTestToolkitService.persistAlbum(sampleAlbum1)
-            musifyTestToolkitService.persistAlbum(sampleAlbum2)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum1)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum2)
             def fetchedAlbums = musifyService.fetchAllAlbums()
         then:
 //            println JsonOutput.prettyPrint(JsonOutput.toJson(fetchedAlbums))
@@ -150,7 +149,7 @@ class MusifyServiceIntegrationSpec extends IntegrationSpec {
 
     def testFetchGenresOfAlbum() {
         when:
-            musifyTestToolkitService.persistAlbum(sampleAlbum1)
+            musifyTestToolkitService.persistAlbumAlongWithGenres(sampleAlbum1)
             def albumGenres = musifyService.fetchGenresOfAlbum(sampleAlbum1.id)
         then:
 //            println JsonOutput.prettyPrint(JsonOutput.toJson(albumGenres))
