@@ -9,15 +9,22 @@ class MusifyService {
     def dataSource
 
     //-------------------------------------------------------------- CREATE --------------------------------------------------------------
-    def createAlbum(String title, String artist, def genres)   //Creates an Album in the Database
+    def createAlbum(String title, String artist, def genres)   //Creates an Album
+    {
+        genres = genres.getClass() == String ? [genres] : genres
+        int newAlbumId = insertAlbum(title, artist)
+        genres.each {gen ->
+            addGenreToAlbum(newAlbumId, gen.toInteger())
+        }
+        return newAlbumId
+    }
+
+    def insertAlbum(String title, String artist)    //Inserts an Album in the Database
     {
         Sql sql = new Sql(dataSource)
         def nextIdResult = sql.firstRow("SELECT nextval('albums_id_sequence')")
         int newAlbumId = nextIdResult.nextval
         sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${newAlbumId}, ${title}, ${artist})")
-        genres.each {gen ->
-            sql.executeInsert("INSERT INTO represents(albumId, genreId) VALUES(${newAlbumId}, ${gen.toInteger()})")
-        }
         return newAlbumId
     }
 
@@ -54,6 +61,7 @@ class MusifyService {
     //-------------------------------------------------------------- UPDATE --------------------------------------------------------------
     def updateAlbum(int id, String title, String artist, def genres)   //Updates an Album in the database
     {
+        genres = genres.getClass() == String ? [genres] : genres
         clearAlbumGenres(id)
         genres.each{ gen ->
             addGenreToAlbum(id, gen.toInteger())

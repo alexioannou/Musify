@@ -42,8 +42,8 @@
                             row.insertCell(0).outerHTML = "<th><label>"+album.artist+"</label></th>";
                             row.insertCell(1).outerHTML = "<th><label>"+album.title+"</label></th>";
                             row.insertCell(2).outerHTML = "<th><label id=\"genres\">"+properGenres+"</label></th>";
-                            row.insertCell(3).outerHTML = "<th><a href=/Musify/musify/edit/"+parseInt(album.id)+" class=editLink value="+album.id+">Edit</a></th>";
-                            row.insertCell(4).outerHTML = "<th><a href=/Musify/musify/delete/"+parseInt(album.id)+" class=deleteLink value="+album.id+">Delete</a></th>";
+                            row.insertCell(3).outerHTML = "<th><a href=/Musify/musify/edit/"+parseInt(album.id)+" class='btn btn-primary' value="+album.id+">Edit</a></th>";
+                            row.insertCell(4).outerHTML = "<th><a href=/Musify/musify/delete/"+parseInt(album.id)+" class='btn btn-danger' value="+album.id+">Delete</a></th>";
                         }
                     }});
                 $('#pageHeader').html("Search results for:<br/>Title: "+formData.title+", Artist: "+formData.artist+", Genre: "+formData.genre);
@@ -67,8 +67,8 @@
                             row.insertCell(0).outerHTML = "<th><label>"+album.artist+"</label></th>";
                             row.insertCell(1).outerHTML = "<th><label>"+album.title+"</label></th>";
                             row.insertCell(2).outerHTML = "<th><label id=\"genres\">"+properGenres+"</label></th>";
-                            row.insertCell(3).outerHTML = "<th><a href=/Musify/musify/edit/"+parseInt(album.id)+" class=editLink value="+album.id+">Edit</a></th>";
-                            row.insertCell(4).outerHTML = "<th><a href=/Musify/musify/delete/"+parseInt(album.id)+" class=deleteLink value="+album.id+">Delete</a></th>";
+                            row.insertCell(3).outerHTML = "<th><a href=/Musify/musify/edit/"+parseInt(album.id)+" class='btn btn-primary' value="+album.id+">Edit</a></th>";
+                            row.insertCell(4).outerHTML = "<th><a href=/Musify/musify/delete/"+parseInt(album.id)+" class='btn btn-danger' value="+album.id+">Delete</a></th>";
                         }
                     }});
                 $('#titleField').val("");

@@ -37,7 +37,7 @@
             <label for="genres" id="genresLabel">Genres</label><br/>
             <select name="genres" id="genres" multiple>
                 <g:each in="${genres}" var="genre">
-                    <option value=${genre.id}>${genre.name}</option>
+                    <option id="option${genre.id}" value=${genre.id}>${genre.name}</option>
                 </g:each>
             </select>
             <div>
