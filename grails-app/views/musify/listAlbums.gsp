@@ -38,12 +38,12 @@
                                 properGenres.push(genre.name)
                             }
                             properGenres = properGenres.toString().split(',').join(', ');
-                            let row = document.getElementById("myTable").insertRow(1);
-                            row.insertCell(0).outerHTML = "<th><label>"+album.artist+"</label></th>";
-                            row.insertCell(1).outerHTML = "<th><label>"+album.title+"</label></th>";
-                            row.insertCell(2).outerHTML = "<th><label id=\"genres\">"+properGenres+"</label></th>";
-                            row.insertCell(3).outerHTML = "<th><a href=/Musify/musify/edit/"+parseInt(album.id)+" class='btn btn-primary' value="+album.id+">Edit</a></th>";
-                            row.insertCell(4).outerHTML = "<th><a href=/Musify/musify/delete/"+parseInt(album.id)+" class='btn btn-danger' value="+album.id+">Delete</a></th>";
+                            let row = document.getElementById("tableBody").insertRow(-1);
+                            row.insertCell(0).outerHTML = "<th id=artistCell><label>"+album.artist+"</label></th>";
+                            row.insertCell(1).outerHTML = "<th id=titleCell><label>"+album.title+"</label></th>";
+                            row.insertCell(2).outerHTML = "<th id=genresCell><label id=\"genres\">"+properGenres+"</label></th>";
+                            row.insertCell(3).outerHTML = "<th id=editCell><a href=/Musify/musify/edit/"+parseInt(album.id)+" class='btn btn-primary' value="+album.id+">Edit</a></th>";
+                            row.insertCell(4).outerHTML = "<th id=deleteCell><a href=/Musify/musify/delete/"+parseInt(album.id)+" class='btn btn-danger' value="+album.id+">Delete</a></th>";
                         }
                     }});
                 $('#pageHeader').html("Search results for:<br/>Title: "+formData.title+", Artist: "+formData.artist+", Genre: "+formData.genre);
@@ -51,10 +51,11 @@
 
             //Clear
             $("#clearButton").click(function(event) {
-               event.preventDefault();
+                event.preventDefault();
                 let url = "${createLink(controller:'Musify', action:'search')}";
                 $.ajax({url: url, dataType: "json", success: function(result) {
-                        $("#myTable").html("<tr><th class=tableColumnHeader>Artist</th><th class=tableColumnHeader>Title</th> <th class=tableColumnHeader>Genres</th> <th/> <th/> </tr>");
+                        // $("#myTable").html("<tr><th class=tableColumnHeader>Artist</th><th class=tableColumnHeader>Title</th> <th class=tableColumnHeader>Genres</th> <th/> <th/> </tr>");
+                        $("#tableBody").html("")
                         for(album of result)
                         {
                             let properGenres = [];
@@ -63,12 +64,12 @@
                                 properGenres.push(genre.name)
                             }
                             properGenres = properGenres.toString().split(',').join(', ');
-                            let row = document.getElementById("myTable").insertRow(1);
-                            row.insertCell(0).outerHTML = "<th><label>"+album.artist+"</label></th>";
-                            row.insertCell(1).outerHTML = "<th><label>"+album.title+"</label></th>";
-                            row.insertCell(2).outerHTML = "<th><label id=\"genres\">"+properGenres+"</label></th>";
-                            row.insertCell(3).outerHTML = "<th><a href=/Musify/musify/edit/"+parseInt(album.id)+" class='btn btn-primary' value="+album.id+">Edit</a></th>";
-                            row.insertCell(4).outerHTML = "<th><a href=/Musify/musify/delete/"+parseInt(album.id)+" class='btn btn-danger' value="+album.id+">Delete</a></th>";
+                            let row = document.getElementById("tableBody").insertRow(-1);
+                            row.insertCell(0).outerHTML = "<th id=artistCell><label>"+album.artist+"</label></th>";
+                            row.insertCell(1).outerHTML = "<th id=titleCell><label>"+album.title+"</label></th>";
+                            row.insertCell(2).outerHTML = "<th id=genresCell><label id=\"genres\">"+properGenres+"</label></th>";
+                            row.insertCell(3).outerHTML = "<th id=editCell><a href=/musify/edit/"+parseInt(album.id)+" class='btn btn-primary' value="+album.id+">Edit</a></th>";
+                            row.insertCell(4).outerHTML = "<th id=deleteCell><a href=/musify/delete/"+parseInt(album.id)+" class='btn btn-danger' value="+album.id+">Delete</a></th>";
                         }
                     }});
                 $('#titleField').val("");
@@ -81,42 +82,46 @@
 </head>
 
 <body>
-    <g:applyLayout name="headerLayout"/>
-    <h1 id="pageHeader">These are all your albums</h1>
-    <div id="tableDiv">
-        <table id="myTable" class="table table-striped table-bordered">
+<g:applyLayout name="headerLayout"/>
+<h1 id="pageHeader">These are all your albums</h1>
+<div id="tableDiv">
+    <table id="myTable" class="table table-striped table-bordered">
+        <thead id="tableHead">
+        <tr>
+            <th class="tableColumnHeader">Artist</th>
+            <th class="tableColumnHeader">Title</th>
+            <th class="tableColumnHeader">Genres</th>
+            <th/>
+            <th/>
+        </tr>
+        </thead>
+        <tbody id="tableBody">
+        <g:each in="${albums}" var="album">
             <tr>
-                <th class="tableColumnHeader">Artist</th>
-                <th class="tableColumnHeader">Title</th>
-                <th class="tableColumnHeader">Genres</th>
-                <th/>
-                <th/>
+                <th id="artistCell"><label>${album.artist}</label></th>
+                <th id="titleCell"><label>${album.title}</label></th>
+                <th id="genresCell"><label id="genres"><g:eachJoin in="${album.genres}" var="genre" delimiter=", ">${genre.name}</g:eachJoin></label></th>
+                <th id="editCell"><g:link class="btn btn-primary" value="${album.id}" action="edit" params="['id': album.id]">Edit</g:link></th>
+                <th id="deleteCell"><g:link class="btn btn-danger" value="${album.id}" action="delete" params="['id': album.id]">Delete</g:link></th>
             </tr>
-            <g:each in="${albums}" var="album">
-                <tr>
-                    <th><label>${album.artist}</label></th>
-                    <th><label>${album.title}</label></th>
-                    <th><label id="genres"><g:eachJoin in="${album.genres}" var="genre" delimiter=", ">${genre.name}</g:eachJoin></label></th>
-                    <th><g:link class="btn btn-primary" value="${album.id}" action="edit" params="['id': album.id]">Edit</g:link></th>
-                    <th><g:link class="btn btn-danger" value="${album.id}" action="delete" params="['id': album.id]">Delete</g:link></th>
-                </tr>
-            </g:each>
-        </table>
-    </div>
-    <div id="formDiv">
-        <form id="myForm" name="myForm" controller="Musify">
-            <h1 id="formHeader">Search for albums</h1>
-            <label class="formLabel" id="titleSearch" for="titleField">Title</label>
-            <input class="form-control" type="text" id="titleField" name="title"/><br/>
-            <label id="artistSearch" for="artistField">Artist </label>
-            <input class="form-control" type="text" id="artistField" name="artist"/><br/>
-            <label id="genreSearch" for="genreField">Genre </label>
-            <input class="form-control" type="text" id="genreField" name="genre"/><br/>
-            <g:actionSubmit id="searchButton" class="button" value="Search"/>
-            <g:actionSubmit id="clearButton" class="button" value="Clear"/>
-            <g:actionSubmit value="New..." action="add" class="button"/>
-        </form>
-    </div>
-    <g:applyLayout name="footerLayout"/>
+        </g:each>
+        </tbody>
+    </table>
+</div>
+<div id="formDiv">
+    <form id="myForm" name="myForm" controller="Musify">
+        <h1 id="formHeader">Search for albums</h1>
+        <label class="formLabel" id="titleSearch" for="titleField">Title</label>
+        <input class="form-control" type="text" id="titleField" name="title"/><br/>
+        <label id="artistSearch" for="artistField">Artist </label>
+        <input class="form-control" type="text" id="artistField" name="artist"/><br/>
+        <label id="genreSearch" for="genreField">Genre </label>
+        <input class="form-control" type="text" id="genreField" name="genre"/><br/>
+        <g:actionSubmit id="searchButton" class="button" value="Search"/>
+        <g:actionSubmit id="clearButton" class="button" value="Clear"/>
+        <g:actionSubmit id="newButton" class="button" value="New..." action="add" onclick="this.form.action='${createLink(action:'add')}'"/>
+    </form>
+</div>
+<g:applyLayout name="footerLayout"/>
 </body>
 </html>

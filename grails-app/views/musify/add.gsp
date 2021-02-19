@@ -14,26 +14,26 @@
 </head>
 
 <body>
-    <g:applyLayout name="headerLayout"/>
-    <h1 id="pageHeader">Create a new album</h1>
-    <div id="formDiv">
-        <form id="myForm" name="myForm" controller="Musify">
-            <label class="formLabel" id="titleLabel" for="titleField">Title</label>
-            <input class="form-control" type="text" id="titleField" name="title"/><br/>
-            <label class="formLabel" id="artistLabel" for="artistField">Artist </label>
-            <input class="form-control" type="text" id="artistField" name="artist"/><br/>
-            <label for="genres" id="genresLabel">Genres</label><br/>
-            <select name="genres" id="genres" multiple>
-                <g:each in="${genres}" var="genre">
-                    <option id="option${genre.id}" value=${genre.id}>${genre.name}</option>
-                </g:each>
-            </select>
-            <div>
-                <g:actionSubmit class="button" id="createButton" value="Create" action="create"/>
-                <g:actionSubmit value="Cancel" action="listAlbums" class="button"/>
-            </div>
-        </form>
-    </div>
-    <g:applyLayout name="footerLayout"/>
+<g:applyLayout name="headerLayout"/>
+<h1 id="pageHeader">Create a new album</h1>
+<div id="formDiv">
+    <form id="myForm" name="myForm" controller="Musify">
+        <label class="formLabel" id="titleLabel" for="titleField">Title</label>
+        <input class="form-control" type="text" id="titleField" name="title"/><br/>
+        <label class="formLabel" id="artistLabel" for="artistField">Artist </label>
+        <input class="form-control" type="text" id="artistField" name="artist"/><br/>
+        <label for="genres" id="genresLabel">Genres</label><br/>
+        <select name="genres" id="genres" multiple>
+            <g:each in="${genres}" var="genre">
+                <option id="option${genre.id}" value=${genre.id}>${genre.name}</option>
+            </g:each>
+        </select>
+        <div>
+            <g:actionSubmit class="button" id="createButton" value="Create" action="create"/>
+            <g:actionSubmit value="Cancel" action="listAlbums" class="button"/>
+        </div>
+    </form>
+</div>
+<g:applyLayout name="footerLayout"/>
 </body>
 </html>

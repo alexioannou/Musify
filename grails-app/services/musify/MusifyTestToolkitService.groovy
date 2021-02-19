@@ -8,116 +8,122 @@ class MusifyTestToolkitService {
     
     def dataSource
     
-    def fetchAlbum(int id)
+    //-------------------------------------------------------------- CREATE --------------------------------------------------------------
+    def createAlbum(String title, String artist, def genres)   //Creates an Album
     {
-        Sql sql = new Sql(dataSource)
-        return sql.firstRow("SELECT * FROM albums WHERE id = ${id}")
-    }
-    
-    /**
-     * Fetches an Album along with the IDs of
-     * all the Genres associated with it
-     * @param id : The id of the Album to be fetched
-     */
-    def fetchAlbumAlongWithGenreIds(int id)
-    {
-        def album = fetchAlbum(id)
-        def albumGenres = fetchAllGenresOfAlbum(id)
-        album.genres = []
-        albumGenres.each { gen ->
-            album.genres << gen.id
-        }
-        return album
-    }
-    
-    def fetchGenre(int id)
-    {
-        Sql sql = new Sql(dataSource)
-        return sql.firstRow("SELECT id, name FROM genres WHERE id = ${id}")
-    }
-
-    def fetchAlbumGenre(int albumId, int genreId)
-    {
-        Sql sql = new Sql(dataSource)
-        def albumGenre = sql.firstRow("SELECT * FROM represents WHERE albumid = ${albumId} AND genreid = ${genreId}")
-        return albumGenre
-    }
-    
-    def fetchAllGenresOfAlbum(int id)
-    {
-        Sql sql = new Sql(dataSource)
-        def genres = sql.rows("SELECT id, name FROM genres, represents WHERE genreId = genres.id AND albumId = ${id}")
-        return genres
-    }
-    
-    def searchAlbum(String title, String artist, String genreName)
-    {
-    
-    }
-    
-    def searchGenre(String name)
-    {
-    
-    }
-
-    def persistAlbum(int id, String title, String artist)
-    {
-        Sql sql = new Sql(dataSource)
-        def albumCreated = sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${id}, ${title}, ${artist})")
-        return albumCreated
-    }
-
-    def persistAlbum(def album)
-    {
-        Sql sql = new Sql(dataSource)
-        def albumCreated = sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${album.id}, ${album.title}, ${album.artist})")
-        return albumCreated
-    }
-    
-    def persistAlbumAlongWithGenres(int id, String title, String artist, def genres)
-    {
-        Sql sql = new Sql(dataSource)
-        def albumCreated = sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${id}, ${title}, ${artist})",
-        ["id", "title", "artist"]).first()
-        albumCreated.genres = []
+        genres = genres.getClass() == String ? [genres] : genres
+        int newAlbumId = insertAlbum(title, artist)
         genres.each {gen ->
-            persistGenre(gen.id, gen.name)
-            associateGenreWithAlbum(id, gen.id)
+            addGenreToAlbum(newAlbumId, gen.toInteger())
         }
-        return albumCreated
-    }
-
-    def persistAlbumAlongWithGenres(def album)
-    {
-        Sql sql = new Sql(dataSource)
-        def albumCreated = sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${album.id}, ${album.title}, ${album.artist})",
-                ["id", "title", "artist"]).first()
-        albumCreated.genres = []
-        album.genres.each {gen ->
-            persistGenre(gen.id, gen.name)
-            associateGenreWithAlbum(album.id, gen.id)
-        }
-        return albumCreated
+        return newAlbumId
     }
     
-    def persistGenre(int id, String name)
+    def insertAlbum(String title, String artist)    //Inserts an Album in the Database
     {
         Sql sql = new Sql(dataSource)
-        def genreCreated = sql.executeInsert("INSERT INTO genres(id, name) VALUES(${id}, ${name})")
-        return genreCreated
+        def nextIdResult = sql.firstRow("SELECT nextval('albums_id_sequence')")
+        int newAlbumId = nextIdResult.nextval
+        sql.executeInsert("INSERT INTO albums(id, title, artist) VALUES(${newAlbumId}, ${title}, ${artist})")
+        return newAlbumId
     }
-
-    def persistGenre(def genre)
+    
+    //-------------------------------------------------------------- List --------------------------------------------------------------
+    def listAlbums()   //Lists all Albums in the Database
     {
-        Sql sql = new Sql(dataSource)
-        def genreCreated = sql.executeInsert("INSERT INTO genres(id, name) VALUES(${genre.id}, ${genre.name})")
-        return genreCreated
+        def albumList = fetchAllAlbums()
+        albumList.allAlbums.each{alb ->
+            alb.genres = []
+            albumList.allAlbumGenres.each {gen ->
+                if(gen.albumid == alb.id)
+                {
+                    alb.genres.add([id:gen.id, name:gen.name])
+                }
+            }
+        }
+        return albumList.allAlbums
     }
-
-    def associateGenreWithAlbum(int albumId, int genreId)
+    
+    //-------------------------------------------------------------- SEARCH --------------------------------------------------------------
+    def searchAlbumsAlongWithGenres(String title, String artist, String genre)   //Searches for Albums in the Database
+    {
+        def albums = fetchCorrectAlbums(title, artist, genre)
+        albums.each{alb ->
+            def genres = fetchGenresOfAlbum(alb.id)
+            alb.genres = []
+            genres.each {gen ->
+                alb.genres.add(id:gen.id, name:gen.name)
+            }
+        }
+        return albums
+    }
+    
+    //-------------------------------------------------------------- UPDATE --------------------------------------------------------------
+    def updateAlbum(int id, String title, String artist, def genres)   //Updates an Album in the database
+    {
+        genres = genres.getClass() == String ? [genres] : genres
+        clearAlbumGenres(id)
+        genres.each{ gen ->
+            addGenreToAlbum(id, gen.toInteger())
+        }
+        Sql sql = new Sql(dataSource)
+        sql.execute("UPDATE albums SET title = ${title}, artist = ${artist} WHERE id = ${id}")
+    }
+    
+    def addGenreToAlbum(int albumId, int genreId)   //Adds Genres to the Album
     {
         Sql sql = new Sql(dataSource)
-        def albumGenreCreated = sql.executeInsert("INSERT INTO represents(albumid, genreid) VALUES(${albumId}, ${genreId})")
-        return albumGenreCreated
+        sql.execute("INSERT INTO represents VALUES(${albumId}, ${genreId})")
+    }
+    
+    //-------------------------------------------------------------- DELETE --------------------------------------------------------------
+    def deleteAlbum(int id)  //Deletes an Album from the Database
+    {
+        Sql sql = new Sql(dataSource)
+        sql.execute("DELETE FROM albums WHERE id = ${id}")
+    }
+    
+    def clearAlbumGenres(int id)
+    {
+        Sql sql = new Sql(dataSource)
+        sql.execute("DELETE FROM represents WHERE albumId = ${id}")
+    }
+    
+    //-------------------------------------------------------------- FETCH --------------------------------------------------------------
+    def fetchSingleAlbum(int id) //Fetches an Album from the Database
+    {
+        Sql sql = new Sql(dataSource)
+        def singleAlbumResult = sql.firstRow("Select * FROM albums where id = ${id}")
+        singleAlbumResult.genres = sql.rows("Select genreId as id, genres.name FROM genres, represents where genres.id = genreId AND albumid = ${id}")
+        return singleAlbumResult
+    }
+    
+    def fetchCorrectAlbums(String title, String artist, String genre)    //Fetches the correct Albums
+    {
+        Sql sql = new Sql(dataSource)
+        return sql.rows("""SELECT DISTINCT albums.id, albums.title, albums.artist
+                                                    FROM albums, represents, genres
+                                                    WHERE genres.id = genreId AND albums.id = albumid AND (albums.title = ${title} OR albums.artist = ${artist} OR genres.name = ${genre})""")
+    }
+    
+    def fetchAllAlbums()    //Fetches all Albums from the Database
+    {
+        Sql sql = new Sql(dataSource)
+        def albumsResults = sql.rows("Select * FROM albums")
+        def albumGenresResults = sql.rows("Select albumid, genres.id, genres.name FROM represents, genres WHERE genres.id = genreId")
+        return [allAlbums: albumsResults, allAlbumGenres: albumGenresResults]
+    }
+    
+    def fetchGenresOfAlbum(int id)   //Fetches the Genres of an Album from the Database
+    {
+        Sql sql = new Sql(dataSource)
+        sql.rows("Select albumid, genres.id, genres.name FROM represents, genres WHERE genreId = genres.id AND albumid = ${id}")
+    }
+    
+    def fetchAllGenres()    //Fetches all Genres from the Database
+    {
+        Sql sql = new Sql(dataSource)
+        def genresResults = sql.rows("Select * FROM genres")
+        return genresResults
     }
 }
